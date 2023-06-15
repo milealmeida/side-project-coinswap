@@ -1,9 +1,9 @@
+import { Heading } from '@chakra-ui/react';
+
 function App() {
   return (
-    <>
-      <h1>Hello World</h1>
-    </>
-  )
+    <Heading color="textPrimary">Hello World</Heading>
+  );
 }
 
-export default App
+export default App;
