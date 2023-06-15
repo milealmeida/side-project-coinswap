@@ -1,9 +1,13 @@
+import { ChakraProvider, Heading } from '@chakra-ui/react';
+
+import { theme } from './styles/global';
+
 function App() {
   return (
-    <>
-      <h1>Hello World</h1>
-    </>
-  )
+    <ChakraProvider theme={theme}>
+      <Heading color="textPrimary">Hello World</Heading>
+    </ChakraProvider>
+  );
 }
 
-export default App
+export default App;
