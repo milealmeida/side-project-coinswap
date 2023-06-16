@@ -1,13 +1,23 @@
-import { extendTheme } from '@chakra-ui/react';
+import { extendTheme, type ThemeConfig } from '@chakra-ui/react';
 
 const colors = {
-  highlight: '#02A724',
+  primary: '#02A724',
+};
+
+export const light = {
   textPrimary: '#0F172A',
   textSecondary: '#334155',
-  surfacePrimary: '#FFFFFF',
-  surfaceSsecondary: '#94A3B8',
+  surfaceSecondary: '#94A3B8',
   graphicElements: '#94A3B8',
   bgColor: '#F8FAFC',
+};
+
+export const dark = {
+  textPrimary: '#F8FAFC',
+  textSecondary: '#94A3B8',
+  surfaceSecondary: '#334155',
+  graphicElements: '#334155',
+  bgColor: '#0F172A',
 };
 
 const fonts = {
@@ -16,4 +26,9 @@ const fonts = {
   mono: `'Inter', sans-serif`,
 };
 
-export const theme = extendTheme({ colors, fonts });
+const config: ThemeConfig = {
+  initialColorMode: 'system',
+  useSystemColorMode: false,
+};
+
+export const theme = extendTheme({ colors, fonts, config });
