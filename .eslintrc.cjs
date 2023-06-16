@@ -1,5 +1,10 @@
 module.exports = {
   env: { browser: true, es2020: true },
+  "settings": {
+    "react": {
+      "version": "detect"
+    }
+  },
   extends: [
     'eslint:recommended',
     'plugin:@typescript-eslint/recommended',
