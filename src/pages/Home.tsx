@@ -4,13 +4,13 @@ import {
   Heading,
   useColorMode,
   useColorModeValue
-} from '@chakra-ui/react'
+} from '@chakra-ui/react';
 
-import { dark, light } from 'styles/global'
+import { dark, light } from 'styles/global';
 
 export default function Home() {
-  const { colorMode, toggleColorMode } = useColorMode()
-  const colors = useColorModeValue(light, dark)
+  const { colorMode, toggleColorMode } = useColorMode();
+  const colors = useColorModeValue(light, dark);
 
   return (
     <Box
@@ -26,5 +26,5 @@ export default function Home() {
         {colorMode === 'light' ? 'Dark' : 'Light'}
       </Button>
     </Box>
-  )
+  );
 }
