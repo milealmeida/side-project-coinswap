@@ -31,4 +31,12 @@ const config: ThemeConfig = {
   useSystemColorMode: false
 };
 
-export const theme = extendTheme({ colors, fonts, config });
+const styles = {
+  global: {
+    html: {
+      fontSize: '62.5%'
+    }
+  }
+};
+
+export const theme = extendTheme({ colors, fonts, config, styles });

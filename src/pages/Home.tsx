@@ -5,6 +5,7 @@ import {
   useColorMode,
   useColorModeValue
 } from '@chakra-ui/react';
+import { Footer } from 'components';
 
 import { dark, light } from 'styles/global';
 
@@ -25,6 +26,8 @@ export default function Home() {
       <Button onClick={toggleColorMode}>
         {colorMode === 'light' ? 'Dark' : 'Light'}
       </Button>
+
+      <Footer />
     </Box>
   );
 }
