@@ -5,9 +5,9 @@ import {
   useColorMode,
   useColorModeValue
 } from '@chakra-ui/react';
-import { Footer } from 'components';
+import { Footer } from '../components';
 
-import { dark, light } from 'styles/global';
+import { dark, light } from '../styles/global';
 
 export default function Home() {
   const { colorMode, toggleColorMode } = useColorMode();

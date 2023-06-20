@@ -1,5 +1,5 @@
 import { Flex, Link, Image, Text, useColorModeValue } from '@chakra-ui/react';
-import { dark, light } from 'styles/global';
+import { dark, light } from '../styles/global';
 
 export type AvatarProps = {
   githubUsername: string;
