@@ -1,3 +1,5 @@
+import { useState } from 'react';
+
 import {
   Flex,
   Heading,
@@ -18,6 +20,24 @@ import usa from '../assets/img/usa.svg';
 
 const Header = () => {
   const { colorMode, toggleColorMode } = useColorMode();
+
+  const [language, setLanguage] = useState('usa');
+
+  const handleLanguageFlag = () => {
+    if (language === 'ptBr') {
+      return <Image w="3rem" src={ptBr} alt="Flag of Brazil" />;
+    }
+
+    if (language === 'es') {
+      return <Image w="3rem" src={es} alt="Flag of Spain" />;
+    }
+
+    return <Image w="3rem" src={usa} alt="Flag of USA" />;
+  };
+
+  const handleLanguageOption = (languageSelected: string) => {
+    setLanguage(languageSelected);
+  };
 
   return (
     <Flex
@@ -45,17 +65,27 @@ const Header = () => {
         />
 
         <Menu isLazy>
-          <MenuButton fontSize="1.6rem">
-            <Image w="3rem" src={ptBr} alt="Flag of Brazil" />
-          </MenuButton>
-          <MenuList>
-            <MenuItem>
+          <MenuButton fontSize="1.6rem">{handleLanguageFlag()}</MenuButton>
+          <MenuList minW="initial" width="6rem">
+            <MenuItem
+              justifyContent="center"
+              onClick={() => handleLanguageOption('usa')}
+              bg={language === 'usa' ? 'rgba(2, 167, 36, 0.6)' : 'transparent'}
+            >
               <Image w="3rem" src={usa} alt="Flag of USA" />
             </MenuItem>
-            <MenuItem>
+            <MenuItem
+              justifyContent="center"
+              onClick={() => handleLanguageOption('es')}
+              bg={language === 'es' ? 'rgba(2, 167, 36, 0.6)' : 'transparent'}
+            >
               <Image w="3rem" src={es} alt="Flag of Spain" />
             </MenuItem>
-            <MenuItem>
+            <MenuItem
+              justifyContent="center"
+              onClick={() => handleLanguageOption('ptBr')}
+              bg={language === 'ptBr' ? 'rgba(2, 167, 36, 0.6)' : 'transparent'}
+            >
               <Image w="3rem" src={ptBr} alt="Flag of Brazil" />
             </MenuItem>
           </MenuList>
