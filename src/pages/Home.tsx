@@ -1,16 +1,9 @@
-import {
-  Box,
-  Button,
-  Heading,
-  useColorMode,
-  useColorModeValue
-} from '@chakra-ui/react';
-import { Footer } from 'components';
+import { Box, Heading, useColorModeValue } from '@chakra-ui/react';
+import { Footer, Header } from '../components';
 
-import { dark, light } from 'styles/global';
+import { dark, light } from '../styles/global';
 
 export default function Home() {
-  const { colorMode, toggleColorMode } = useColorMode();
   const colors = useColorModeValue(light, dark);
 
   return (
@@ -18,15 +11,13 @@ export default function Home() {
       bg={colors.bgColor}
       display="flex"
       alignItems="center"
-      justifyContent="center"
+      justifyContent="space-between"
       flexDir="column"
       height="100vh"
     >
-      <Heading color="primary">Hello World</Heading>
-      <Button onClick={toggleColorMode}>
-        {colorMode === 'light' ? 'Dark' : 'Light'}
-      </Button>
+      <Header />
 
+      <Heading color="primary">Hello World</Heading>
       <Footer />
     </Box>
   );
