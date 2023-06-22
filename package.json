@@ -10,8 +10,9 @@
     "preview": "vite preview",
     "typecheck": "tsc --project tsconfig.json",
     "prepare": "husky install",
-    "test": "jest",
-    "test:cov": "jest --coverage"
+    "test": "jest --maxWorkers=50%",
+    "test:cov": "jest --coverage",
+    "test:watch": "jest --watch"
   },
   "dependencies": {
     "@chakra-ui/react": "^2.7.0",
