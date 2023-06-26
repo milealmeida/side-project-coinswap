@@ -1,4 +1,5 @@
 import { Box, Heading, useColorModeValue } from '@chakra-ui/react';
+
 import { Chart, Footer, Header } from 'components';
 import { useEffect, useState } from 'react';
 
