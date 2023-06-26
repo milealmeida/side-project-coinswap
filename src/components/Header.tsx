@@ -14,9 +14,9 @@ import {
 } from '@chakra-ui/react';
 import { FaMoon, FaSun } from 'react-icons/fa';
 
-import es from '../assets/img/es.svg';
-import ptBr from '../assets/img/pt-br.svg';
-import usa from '../assets/img/usa.svg';
+import es from 'assets/img/es.svg';
+import ptBr from 'assets/img/pt-br.svg';
+import usa from 'assets/img/usa.svg';
 
 const content = [
   {
