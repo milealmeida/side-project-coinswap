@@ -10,8 +10,9 @@
     "preview": "vite preview",
     "typecheck": "tsc --project tsconfig.json",
     "prepare": "husky install",
-    "test": "jest",
-    "test:cov": "jest --coverage"
+    "test": "jest --maxWorkers=50%",
+    "test:cov": "jest --coverage",
+    "test:watch": "jest --watch"
   },
   "dependencies": {
     "@chakra-ui/react": "^2.7.0",
@@ -20,6 +21,7 @@
     "framer-motion": "^10.12.16",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "react-icons": "^4.9.0",
     "vite-tsconfig-paths": "^4.2.0"
   },
   "devDependencies": {

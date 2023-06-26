@@ -6,7 +6,7 @@ const Footer = () => {
   const colors = useColorModeValue(light, dark);
 
   return (
-    <Center position="absolute" left="0" right="0" bottom="0">
+    <Center>
       <Flex
         p="2.5rem"
         fontSize="1.4rem"
