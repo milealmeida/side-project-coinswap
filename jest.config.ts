@@ -9,5 +9,6 @@ module.exports = {
   collectCoverageFrom: [
     '<rootDir>/src/**/*.{js,ts,jsx,tsx}',
     '!<rootDir>/src/**/*.{d.ts, ts}'
-  ]
+  ],
+  moduleDirectories: ['node_modules', 'src']
 };

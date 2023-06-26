@@ -1,6 +1,6 @@
 import { Center, Flex, Text, useColorModeValue } from '@chakra-ui/react';
-import { dark, light } from '../styles/global';
-import { Avatar } from '../components';
+import { dark, light } from 'styles/global';
+import { Avatar } from 'components';
 
 const Footer = () => {
   const colors = useColorModeValue(light, dark);

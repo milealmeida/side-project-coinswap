@@ -1,7 +1,7 @@
 import { Box, Heading, useColorModeValue } from '@chakra-ui/react';
-import { Footer, Header } from '../components';
+import { Footer, Header } from 'components';
 
-import { dark, light } from '../styles/global';
+import { dark, light } from 'styles/global';
 
 export default function Home() {
   const colors = useColorModeValue(light, dark);
