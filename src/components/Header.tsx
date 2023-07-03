@@ -1,5 +1,3 @@
-import { useState } from 'react';
-
 import {
   Flex,
   Heading,
@@ -18,46 +16,24 @@ import es from 'assets/img/es.svg';
 import ptBr from 'assets/img/pt-br.svg';
 import usa from 'assets/img/usa.svg';
 
-const content = [
-  {
-    id: 1,
-    shortName: 'usa',
-    name: 'USA',
-    img: usa
-  },
-  {
-    id: 2,
-    shortName: 'es',
-    name: 'Spain',
-    img: es
-  },
-  {
-    id: 3,
-    shortName: 'ptBr',
-    name: 'Brazil',
-    img: ptBr
-  }
-];
+import { type AcceptedLanguages } from 'types/Languages';
+import { Languages } from 'constants/languages';
+import { useTranslation } from 'react-i18next';
 
 const Header = () => {
+  const { i18n } = useTranslation();
   const { colorMode, toggleColorMode } = useColorMode();
 
-  const [language, setLanguage] = useState('usa');
+  const defaultLanguage = i18n.language as AcceptedLanguages;
 
-  const handleLanguageFlag = () => {
-    if (language === 'ptBr') {
-      return <Image w="3rem" src={ptBr} alt="Flag of Brazil" />;
-    }
+  const renderCountryIcon = (iconKey: AcceptedLanguages) => {
+    const data = {
+      ptBr: <Image w="3rem" src={ptBr} alt="Flag of Brazil" />,
+      es: <Image w="3rem" src={es} alt="Flag of Spain" />,
+      en: <Image w="3rem" src={usa} alt="Flag of USA" />
+    };
 
-    if (language === 'es') {
-      return <Image w="3rem" src={es} alt="Flag of Spain" />;
-    }
-
-    return <Image w="3rem" src={usa} alt="Flag of USA" />;
-  };
-
-  const handleLanguageOption = (languageSelected: string) => {
-    setLanguage(languageSelected);
+    return data[iconKey];
   };
 
   return (
@@ -86,20 +62,17 @@ const Header = () => {
         />
 
         <Menu isLazy>
-          <MenuButton fontSize="1.6rem">{handleLanguageFlag()}</MenuButton>
+          <MenuButton fontSize="1.6rem">
+            {renderCountryIcon(defaultLanguage)}
+          </MenuButton>
           <MenuList minW="initial" width="6rem">
-            {content.map((item) => (
+            {Languages.map(({ label, code }) => (
               <MenuItem
-                key={item.id}
+                key={label}
                 justifyContent="center"
-                onClick={() => handleLanguageOption(item.shortName)}
-                bg={
-                  language === item.shortName
-                    ? 'rgba(2, 167, 36, 0.6)'
-                    : 'transparent'
-                }
+                onClick={() => i18n.changeLanguage(code)}
               >
-                <Image w="3rem" src={item.img} alt={`"Flag of ${item.name}`} />
+                {renderCountryIcon(code as AcceptedLanguages)}
               </MenuItem>
             ))}
           </MenuList>

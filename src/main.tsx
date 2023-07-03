@@ -1,5 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
+import './i18n.ts';
 
 import { ChakraProvider, ColorModeScript } from '@chakra-ui/react';
 

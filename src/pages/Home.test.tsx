@@ -9,7 +9,7 @@ beforeEach(() => {
 
 describe('<Home />', () => {
   it('should be able to render title', () => {
-    const title = screen.getByRole('heading', { name: /hello world/i });
+    const title = screen.getByRole('heading', { name: /title/i });
 
     expect(title).toBeInTheDocument();
   });
