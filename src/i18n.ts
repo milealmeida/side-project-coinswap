@@ -1,6 +1,9 @@
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
-import resources from 'constants/resources';
+
+import ptBr from 'constants/ptBr';
+import en from 'constants/en';
+import es from 'constants/es';
 
 i18n.use(initReactI18next).init({
   fallbackLng: 'en',
@@ -8,7 +11,7 @@ i18n.use(initReactI18next).init({
   interpolation: {
     escapeValue: false
   },
-  resources: { ...resources }
+  resources: { ptBr, en, es }
 });
 
 export default i18n;
