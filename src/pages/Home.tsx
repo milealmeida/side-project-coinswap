@@ -3,10 +3,13 @@ import { Box, Heading, useColorModeValue } from '@chakra-ui/react';
 import { useEffect, useState } from 'react';
 
 import { dark, light } from 'styles/global';
+import { useTranslation } from 'react-i18next';
 
 export default function Home() {
   const colors = useColorModeValue(light, dark);
   const [data, setdata] = useState<[]>([]);
+
+  const { t: translate } = useTranslation();
 
   useEffect(() => {
     const fetchDatas = async () => {
@@ -28,7 +31,7 @@ export default function Home() {
       height="100vh"
     >
       <Header />
-      <Heading color="primary">Hello World</Heading>
+      <Heading color="primary">{translate('title')}</Heading>
 
       <Box w="50%">
         <Chart data={data} />
