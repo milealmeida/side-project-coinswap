@@ -24,7 +24,7 @@ const Header = () => {
   const { i18n } = useTranslation();
   const { colorMode, toggleColorMode } = useColorMode();
 
-  const defaultLanguage = i18n.language as AcceptedLanguages;
+  const currentLanguage = i18n.language as AcceptedLanguages;
 
   const renderCountryIcon = (iconKey: AcceptedLanguages) => {
     const data = {
@@ -63,7 +63,7 @@ const Header = () => {
 
         <Menu isLazy>
           <MenuButton fontSize="1.6rem">
-            {renderCountryIcon(defaultLanguage)}
+            {renderCountryIcon(currentLanguage)}
           </MenuButton>
           <MenuList minW="initial" width="6rem">
             {Languages.map(({ label, code }) => (
