@@ -11,26 +11,28 @@ import {
   useColorMode
 } from '@chakra-ui/react';
 import { FaMoon, FaSun } from 'react-icons/fa';
+import { useTranslation } from 'react-i18next';
 
 import es from 'assets/img/es.svg';
 import ptBr from 'assets/img/pt-br.svg';
 import usa from 'assets/img/usa.svg';
 
-import { type AcceptedLanguages } from 'types/Languages';
-import { Languages } from 'constants/languages';
-import { useTranslation } from 'react-i18next';
+import { AcceptedLanguages } from 'types/Languages';
+import { languages } from 'assets/locales/languages';
+
+import i18n from 'i18next';
 
 const Header = () => {
-  const { i18n } = useTranslation();
   const { colorMode, toggleColorMode } = useColorMode();
+  const { t: translate } = useTranslation();
 
   const currentLanguage = i18n.language as AcceptedLanguages;
 
   const renderCountryIcon = (iconKey: AcceptedLanguages) => {
     const data = {
-      ptBr: <Image w="3rem" src={ptBr} alt="Flag of Brazil" />,
-      es: <Image w="3rem" src={es} alt="Flag of Spain" />,
-      en: <Image w="3rem" src={usa} alt="Flag of USA" />
+      ptBr: <Image w="3rem" src={ptBr} alt={translate('flags.brazil')} />,
+      es: <Image w="3rem" src={es} alt={translate('flags.spain')} />,
+      en: <Image w="3rem" src={usa} alt={translate('flags.usa')} />
     };
 
     return data[iconKey];
@@ -66,7 +68,7 @@ const Header = () => {
             {renderCountryIcon(currentLanguage)}
           </MenuButton>
           <MenuList minW="initial" width="6rem">
-            {Languages.map(({ label, code }) => (
+            {languages.map(({ label, code }) => (
               <MenuItem
                 key={label}
                 justifyContent="center"
