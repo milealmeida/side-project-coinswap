@@ -1,9 +1,9 @@
-import { Chart, Footer, Header } from 'components';
-import { Box, Heading, useColorModeValue } from '@chakra-ui/react';
 import { useEffect, useState } from 'react';
-
-import { dark, light } from 'styles/global';
+import { Box, Heading, useColorModeValue } from '@chakra-ui/react';
 import { useTranslation } from 'react-i18next';
+
+import { Chart, Footer, Header } from 'components';
+import { dark, light } from 'styles/global';
 
 export default function Home() {
   const colors = useColorModeValue(light, dark);
