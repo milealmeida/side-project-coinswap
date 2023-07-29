@@ -130,16 +130,38 @@ const InputComponent = () => {
   };
 
   return (
-    <Flex>
-      <Input />
+    <Flex
+      sx={{ borderRadius: '0.8rem' }}
+      border="1.5px solid #7C3AED"
+      overflow="hidden"
+    >
+      <Input
+        p="2.6rem 1.6rem"
+        w="16.2rem"
+        fontSize="1.6rem"
+        border="none"
+        variant="outline"
+        _focus={{
+          boxShadow: 'none'
+        }}
+      />
 
       <Menu>
         <MenuButton
+          p="2.6rem 1.6rem"
+          w="13rem"
           as={Button}
           rightIcon={<FaChevronDown />}
           bg="#94A3B8"
-          p="1.6rem"
-          w="100%"
+          css={{
+            borderRadius: '0',
+            '&:hover, &:focus': {
+              backgroundColor: '#828fa0'
+            },
+            '&:active, &[data-active]': {
+              backgroundColor: '#94A3B8'
+            }
+          }}
         >
           <Flex
             color="#0F172A"
@@ -154,7 +176,15 @@ const InputComponent = () => {
         </MenuButton>
         <MenuList maxW="16rem" height="11rem">
           {content.map(({ id, code }) => (
-            <MenuItem key={id} p="1.2rem 1.6rem">
+            <MenuItem
+              key={id}
+              p="1.2rem 1.6rem"
+              css={{
+                '&:hover, &:focus': {
+                  backgroundColor: '#94A3B8'
+                }
+              }}
+            >
               {renderCountryIcon(code as AcceptedCurrencies)}
             </MenuItem>
           ))}
