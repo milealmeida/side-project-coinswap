@@ -1,3 +1,6 @@
+import { ChangeEvent, useState } from 'react';
+import { FaChevronDown } from 'react-icons/fa';
+
 import {
   Button,
   Flex,
@@ -10,130 +13,57 @@ import {
   MenuList
 } from '@chakra-ui/react';
 
-import usd from 'assets/img/usd.svg';
-import eur from 'assets/img/eur.svg';
-import gbp from 'assets/img/gbp.svg';
-import chf from 'assets/img/chf.svg';
-import jpy from 'assets/img/jpy.svg';
-import { FaChevronDown } from 'react-icons/fa';
 import { AcceptedCurrencies } from 'types/Languages';
+import { content } from 'utils/content';
 
 const InputComponent = () => {
-  const content = [
-    {
-      id: 1,
-      src: usd,
-      code: 'usd',
-      alt: 'Bandeira dos Estados Unidos',
-      text: 'USD'
-    },
-    {
-      id: 2,
-      src: eur,
-      code: 'eur',
-      alt: 'Bandeira da Europa',
-      text: 'EUR'
-    },
-    {
-      id: 3,
-      src: gbp,
-      code: 'gbp',
-      alt: 'Bandeira da Inglaterra',
-      text: 'GBP'
-    },
-    {
-      id: 4,
-      src: chf,
-      code: 'chf',
-      alt: 'Bandeira da Suiça',
-      text: 'CHF'
-    },
-    {
-      id: 5,
-      src: jpy,
-      code: 'jpy',
-      alt: 'Bandeira do Japão',
-      text: 'JPY'
-    }
-  ];
+  const [outline, setOutline] = useState(false);
+  const [inputValue, setInputValue] = useState('');
+  const [currency, setCurrency] = useState('usd');
 
-  const renderCountryIcon = (iconKey: AcceptedCurrencies) => {
-    const data = {
-      usd: (
-        <Flex gap="0.8rem" alignItems="center">
-          <Image boxSize="2.4rem" src={content[0].src} alt={content[0].alt} />
-          <Heading
-            color="textPrimary"
-            fontSize="1.6rem"
-            fontWeight={400}
-            lineHeight="1.6rem"
-          >
-            {content[0].text}
-          </Heading>
-        </Flex>
-      ),
-      eur: (
-        <Flex gap="0.8rem" alignItems="center">
-          <Image boxSize="2.4rem" src={content[1].src} alt={content[1].alt} />
-          <Heading
-            color="textPrimary"
-            fontSize="1.6rem"
-            fontWeight={400}
-            lineHeight="1.6rem"
-          >
-            {content[1].text}
-          </Heading>
-        </Flex>
-      ),
-      gbp: (
-        <Flex gap="0.8rem" alignItems="center">
-          <Image boxSize="2.4rem" src={content[2].src} alt={content[2].alt} />
-          <Heading
-            color="textPrimary"
-            fontSize="1.6rem"
-            fontWeight={400}
-            lineHeight="1.6rem"
-          >
-            {content[2].text}
-          </Heading>
-        </Flex>
-      ),
-      chf: (
-        <Flex gap="0.8rem" alignItems="center">
-          <Image boxSize="2.4rem" src={content[3].src} alt={content[3].alt} />
-          <Heading
-            color="textPrimary"
-            fontSize="1.6rem"
-            fontWeight={400}
-            lineHeight="1.6rem"
-          >
-            {content[3].text}
-          </Heading>
-        </Flex>
-      ),
-      jpy: (
-        <Flex gap="0.8rem" alignItems="center">
-          <Image boxSize="2.4rem" src={content[4].src} alt={content[4].alt} />
-          <Heading
-            color="textPrimary"
-            fontSize="1.6rem"
-            fontWeight={400}
-            lineHeight="1.6rem"
-          >
-            {content[4].text}
-          </Heading>
-        </Flex>
-      )
+  const renderCountryCurrency = (currencyKey: AcceptedCurrencies) => {
+    const country = content.map((item) => (
+      <Flex gap="0.8rem" alignItems="center" key={item.id}>
+        <Image boxSize="2.4rem" src={item.src} alt={item.alt} />
+        <Heading
+          color="textPrimary"
+          fontSize="1.6rem"
+          fontWeight={400}
+          lineHeight="1.6rem"
+        >
+          {item.text}
+        </Heading>
+      </Flex>
+    ));
+
+    const countries = {
+      usd: country[0],
+      eur: country[1],
+      gbp: country[2],
+      chf: country[3],
+      jpy: country[4]
     };
 
-    return data[iconKey];
+    return countries[currencyKey];
+  };
+
+  const onChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const newValue = event.target.value;
+
+    setInputValue(newValue);
   };
 
   return (
     <Flex
-      sx={{ borderRadius: '0.8rem' }}
-      border="1.5px solid #7C3AED"
+      borderRadius="0.8rem"
+      border={`1.5px solid ${outline ? '#7C3AED' : '#94A3B8'}`}
       overflow="hidden"
+      alignItems="center"
+      css={{
+        '&:hover': {
+          borderColor: '#7C3AED'
+        }
+      }}
     >
       <Input
         p="2.6rem 1.6rem"
@@ -144,7 +74,13 @@ const InputComponent = () => {
         _focus={{
           boxShadow: 'none'
         }}
+        onChange={onChange}
+        onFocus={() => setOutline(true)}
+        onBlur={() => setOutline(false)}
+        value={inputValue}
       />
+
+      <Flex bgColor="middleGray" width="0.1rem" height="2.4rem" />
 
       <Menu>
         <MenuButton
@@ -152,7 +88,7 @@ const InputComponent = () => {
           w="13rem"
           as={Button}
           rightIcon={<FaChevronDown />}
-          bg="#94A3B8"
+          bg="transparent"
           css={{
             borderRadius: '0',
             '&:hover, &:focus': {
@@ -164,20 +100,29 @@ const InputComponent = () => {
           }}
         >
           <Flex
-            color="#0F172A"
+            color="textPrimary"
             fontSize="1.6rem"
             fontWeight={400}
             lineHeight="1.6rem"
             gap="0.8rem"
             alignItems="center"
           >
-            {renderCountryIcon('eur')}
+            {renderCountryCurrency(currency as AcceptedCurrencies)}
           </Flex>
         </MenuButton>
-        <MenuList maxW="16rem" height="11rem">
+        <MenuList
+          maxW="16rem"
+          maxH="17.5rem"
+          overflow="scroll"
+          borderRadius="0.8rem"
+          boxShadow="0 0.4rem 1.6rem 0 rgba(15, 23, 42, 0.15)"
+          onFocus={() => setOutline(true)}
+          onBlur={() => setOutline(false)}
+        >
           {content.map(({ id, code }) => (
             <MenuItem
               key={id}
+              onClick={() => setCurrency(code)}
               p="1.2rem 1.6rem"
               css={{
                 '&:hover, &:focus': {
@@ -185,7 +130,7 @@ const InputComponent = () => {
                 }
               }}
             >
-              {renderCountryIcon(code as AcceptedCurrencies)}
+              {renderCountryCurrency(code as AcceptedCurrencies)}
             </MenuItem>
           ))}
         </MenuList>

@@ -1,7 +1,8 @@
 import { extendTheme, type ThemeConfig } from '@chakra-ui/react';
 
 const colors = {
-  primary: '#02A724'
+  primary: '#02A724',
+  middleGray: '#94A3B8'
 };
 
 export const light = {
