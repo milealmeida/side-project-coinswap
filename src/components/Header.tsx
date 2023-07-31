@@ -14,7 +14,7 @@ import { FaMoon, FaSun } from 'react-icons/fa';
 import { useTranslation } from 'react-i18next';
 import i18n from 'i18next';
 
-import { AcceptedLanguages } from 'types/Languages';
+import { AcceptedLanguages } from 'types/acceptedLanguages';
 import { languages } from 'assets/locales/languages';
 import { es, ptBr, usa } from 'assets/img';
 

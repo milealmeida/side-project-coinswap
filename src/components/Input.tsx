@@ -13,7 +13,7 @@ import {
   MenuList
 } from '@chakra-ui/react';
 
-import { AcceptedCurrencies } from 'types/Languages';
+import { AcceptedCurrencies } from 'types/acceptedCurrencies';
 import { content } from 'utils/content';
 
 const InputComponent = () => {
