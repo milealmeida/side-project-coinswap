@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Box, Heading, useColorModeValue } from '@chakra-ui/react';
 import { useTranslation } from 'react-i18next';
 
-import { Chart, Footer, Header } from 'components';
+import { Chart, Footer, Header, Input } from 'components';
 import { dark, light } from 'styles/global';
 
 export default function Home() {
@@ -32,6 +32,8 @@ export default function Home() {
     >
       <Header />
       <Heading color="primary">{translate('title')}</Heading>
+
+      <Input />
 
       <Box w="50%">
         <Chart data={data} />

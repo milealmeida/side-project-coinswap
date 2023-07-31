@@ -12,15 +12,11 @@ import {
 } from '@chakra-ui/react';
 import { FaMoon, FaSun } from 'react-icons/fa';
 import { useTranslation } from 'react-i18next';
-
-import es from 'assets/img/es.svg';
-import ptBr from 'assets/img/pt-br.svg';
-import usa from 'assets/img/usa.svg';
-
-import { AcceptedLanguages } from 'types/Languages';
-import { languages } from 'assets/locales/languages';
-
 import i18n from 'i18next';
+
+import { AcceptedLanguages } from 'types/acceptedLanguages';
+import { languages } from 'assets/locales/languages';
+import { es, ptBr, usa } from 'assets/img';
 
 const Header = () => {
   const { colorMode, toggleColorMode } = useColorMode();
