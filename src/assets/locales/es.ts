@@ -1,6 +1,8 @@
 export default {
   translation: {
     title: 'Aplicación de conversión de moneda',
+    subtitle: 'Tasa de Cambio',
+    altExchange: 'Icono de intercambio',
     flags: {
       brazil: 'Bandera de Brasil',
       spain: 'Bandera Española',
