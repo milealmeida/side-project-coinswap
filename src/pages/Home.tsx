@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react';
-import { Box, Heading, useColorModeValue } from '@chakra-ui/react';
+import { Box, Flex, Heading, Image, useColorModeValue } from '@chakra-ui/react';
 import { useTranslation } from 'react-i18next';
 
 import { Chart, Footer, Header, Input } from 'components';
 import { dark, light } from 'styles/global';
+import { arrowExchange } from 'assets/img';
 
 export default function Home() {
   const colors = useColorModeValue(light, dark);
@@ -31,9 +32,24 @@ export default function Home() {
       height="100vh"
     >
       <Header />
-      <Heading color="primary">{translate('title')}</Heading>
+      <Heading color="primary" data-testid="title">
+        {translate('title')}
+      </Heading>
 
-      <Input />
+      <Flex alignItems="center" gap="1.6rem" marginBlock="2rem">
+        <Input />
+        <Image
+          src={arrowExchange}
+          alt={translate('altExchange')}
+          width="2.4rem"
+          height="2.4rem"
+        />
+        <Input />
+      </Flex>
+
+      <Heading w="100%" maxW="64rem" color="textPrimary" data-testid="subtitle">
+        {translate('subtitle')}
+      </Heading>
 
       <Box w="50%">
         <Chart data={data} />

@@ -1,9 +1,11 @@
 export default {
   translation: {
     title: 'Aplicativo de conversão de moeda',
+    subtitle: 'Taxa de Câmbio',
+    altExchange: 'Ícone de troca',
     flags: {
       brazil: 'Bandeira do Brasil',
-      spain: ' Bandeira da Espanha',
+      spain: 'Bandeira da Espanha',
       usa: 'Bandeira dos Estados Unidos'
     },
     footer: {
