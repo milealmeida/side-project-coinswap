@@ -31,7 +31,7 @@ export default function Home() {
         <Input
           currencyCode={currency.toLowerCase() as AcceptedCurrencies}
           onChangeCurrency={(code) => setCurrency(code)}
-          value={1}
+          defaultValue={1}
         />
 
         <Image
@@ -44,7 +44,7 @@ export default function Home() {
         <Input
           currencyCode={currencyIn.toLowerCase() as AcceptedCurrencies}
           onChangeCurrency={(codeIn) => setCurrencyIn(codeIn)}
-          value={currencyValue}
+          defaultValue={currencyValue}
         />
       </Flex>
 
