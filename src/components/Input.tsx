@@ -15,6 +15,7 @@ import {
 
 import { AcceptedCurrencies } from 'types/acceptedCurrencies';
 import { content } from 'utils/content';
+import { useCurrency } from 'contexts/currency';
 
 export type InputComponentProps = {
   currencyCode: AcceptedCurrencies;
@@ -27,6 +28,7 @@ const InputComponent = ({
   ...rest
 }: InputComponentProps) => {
   const [outline, setOutline] = useState(false);
+  const { isLoading } = useCurrency();
 
   const renderCountryCurrency = (currencyKey: AcceptedCurrencies) => {
     const country = content.map((item) => (
@@ -48,10 +50,12 @@ const InputComponent = ({
       eur: country[1],
       gbp: country[2],
       chf: country[3],
-      jpy: country[4]
+      jpy: country[4],
+      brl: country[5],
+      defaultFlag: country[6]
     };
 
-    return countries[currencyKey] ?? countries.usd;
+    return countries[currencyKey] ?? countries.defaultFlag;
   };
 
   return (
@@ -80,12 +84,14 @@ const InputComponent = ({
         size="lg"
         onFocus={() => setOutline(true)}
         onBlur={() => setOutline(false)}
+        isDisabled={isLoading}
       />
 
       <Flex bgColor="middleGray" width="0.1rem" height="2.4rem" />
 
       <Menu>
         <MenuButton
+          isDisabled={isLoading}
           p="2.6rem 1.6rem"
           w="13rem"
           as={Button}
@@ -112,6 +118,7 @@ const InputComponent = ({
             {renderCountryCurrency(currencyCode)}
           </Flex>
         </MenuButton>
+
         <MenuList
           maxW="16rem"
           maxH="17.5rem"
@@ -121,20 +128,22 @@ const InputComponent = ({
           onFocus={() => setOutline(true)}
           onBlur={() => setOutline(false)}
         >
-          {content.map(({ id, code }) => (
-            <MenuItem
-              key={id}
-              p="1.2rem 1.6rem"
-              css={{
-                '&:hover, &:focus': {
-                  backgroundColor: '#94A3B8'
-                }
-              }}
-              onClick={() => onChangeCurrency(code.toUpperCase())}
-            >
-              {renderCountryCurrency(code as AcceptedCurrencies)}
-            </MenuItem>
-          ))}
+          {content
+            .filter((item) => item.code !== 'default')
+            .map(({ id, code }) => (
+              <MenuItem
+                key={id}
+                p="1.2rem 1.6rem"
+                onClick={() => onChangeCurrency(code.toUpperCase())}
+                css={{
+                  '&:hover, &:focus': {
+                    backgroundColor: '#94A3B8'
+                  }
+                }}
+              >
+                {renderCountryCurrency(code as AcceptedCurrencies)}
+              </MenuItem>
+            ))}
         </MenuList>
       </Menu>
     </Flex>

@@ -3,6 +3,7 @@ export default {
     title: 'Currency conversion app',
     subtitle: 'Exchange Rate',
     altExchange: 'Exchange icon',
+    select: 'Select',
     flags: {
       brazil: 'Flag of Brazil',
       spain: 'Flag of Spain',

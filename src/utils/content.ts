@@ -1,4 +1,4 @@
-import { chf, eur, gbp, jpy, usd } from 'assets/img';
+import { chf, eur, gbp, jpy, usd, brl, defaultFlag } from 'assets/img';
 
 export const content = [
   {
@@ -35,5 +35,19 @@ export const content = [
     code: 'jpy',
     alt: 'JPY',
     text: 'JPY'
+  },
+  {
+    id: 6,
+    src: brl,
+    code: 'brl',
+    alt: 'BRL',
+    text: 'BRL'
+  },
+  {
+    id: 7,
+    src: defaultFlag,
+    code: 'default',
+    alt: 'DEFAULT',
+    text: 'Select'
   }
 ];
