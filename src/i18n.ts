@@ -1,17 +1,14 @@
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 
-import { getNavigatorLanguage } from 'utils/getNavigatorLanguage';
-
 import ptBr from 'assets/locales/ptBr';
 import en from 'assets/locales/en';
 import es from 'assets/locales/es';
-
-const languageBrowserUser = getNavigatorLanguage();
+import { getNavigatorLanguage } from 'utils/userUtils';
 
 i18n.use(initReactI18next).init({
   fallbackLng: 'en',
-  lng: languageBrowserUser,
+  lng: getNavigatorLanguage(),
   interpolation: {
     escapeValue: false
   },
