@@ -1,4 +1,4 @@
-import { ChangeEvent, useState } from 'react';
+import { InputHTMLAttributes, useState } from 'react';
 import { FaChevronDown } from 'react-icons/fa';
 
 import {
@@ -16,10 +16,17 @@ import {
 import { AcceptedCurrencies } from 'types/acceptedCurrencies';
 import { content } from 'utils/content';
 
-const InputComponent = () => {
+export type InputComponentProps = {
+  currencyCode: AcceptedCurrencies;
+  onChangeCurrency: (code: string) => void;
+} & InputHTMLAttributes<HTMLInputElement>;
+
+const InputComponent = ({
+  currencyCode,
+  onChangeCurrency,
+  ...rest
+}: InputComponentProps) => {
   const [outline, setOutline] = useState(false);
-  const [inputValue, setInputValue] = useState('');
-  const [currency, setCurrency] = useState('usd');
 
   const renderCountryCurrency = (currencyKey: AcceptedCurrencies) => {
     const country = content.map((item) => (
@@ -44,13 +51,7 @@ const InputComponent = () => {
       jpy: country[4]
     };
 
-    return countries[currencyKey];
-  };
-
-  const onChange = (event: ChangeEvent<HTMLInputElement>) => {
-    const newValue = event.target.value;
-
-    setInputValue(newValue);
+    return countries[currencyKey] ?? countries.usd;
   };
 
   return (
@@ -74,10 +75,11 @@ const InputComponent = () => {
         _focus={{
           boxShadow: 'none'
         }}
-        onChange={onChange}
+        {...rest}
+        type="text"
+        size="lg"
         onFocus={() => setOutline(true)}
         onBlur={() => setOutline(false)}
-        value={inputValue}
       />
 
       <Flex bgColor="middleGray" width="0.1rem" height="2.4rem" />
@@ -107,7 +109,7 @@ const InputComponent = () => {
             gap="0.8rem"
             alignItems="center"
           >
-            {renderCountryCurrency(currency as AcceptedCurrencies)}
+            {renderCountryCurrency(currencyCode)}
           </Flex>
         </MenuButton>
         <MenuList
@@ -122,13 +124,13 @@ const InputComponent = () => {
           {content.map(({ id, code }) => (
             <MenuItem
               key={id}
-              onClick={() => setCurrency(code)}
               p="1.2rem 1.6rem"
               css={{
                 '&:hover, &:focus': {
                   backgroundColor: '#94A3B8'
                 }
               }}
+              onClick={() => onChangeCurrency(code.toUpperCase())}
             >
               {renderCountryCurrency(code as AcceptedCurrencies)}
             </MenuItem>

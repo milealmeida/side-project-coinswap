@@ -1,26 +1,17 @@
-import { useEffect, useState } from 'react';
 import { Box, Flex, Heading, Image, useColorModeValue } from '@chakra-ui/react';
 import { useTranslation } from 'react-i18next';
 
 import { Chart, Footer, Header, Input } from 'components';
 import { dark, light } from 'styles/global';
 import { arrowExchange } from 'assets/img';
+import { useCurrency } from 'contexts/currency';
+import { AcceptedCurrencies } from 'types/acceptedCurrencies';
 
 export default function Home() {
   const colors = useColorModeValue(light, dark);
-  const [data, setdata] = useState<[]>([]);
-
   const { t: translate } = useTranslation();
-
-  useEffect(() => {
-    const fetchDatas = async () => {
-      const res = await fetch('https://api.coincap.io/v2/assets/?limit=20');
-      const data = await res.json();
-      setdata(data?.data);
-    };
-
-    fetchDatas();
-  }, []);
+  const { currencyValue, currency, currencyIn, setCurrency, setCurrencyIn } =
+    useCurrency();
 
   return (
     <Box
@@ -37,14 +28,24 @@ export default function Home() {
       </Heading>
 
       <Flex alignItems="center" gap="1.6rem" marginBlock="2rem">
-        <Input />
+        <Input
+          currencyCode={currency.toLowerCase() as AcceptedCurrencies}
+          onChangeCurrency={(code) => setCurrency(code)}
+          value={1}
+        />
+
         <Image
           src={arrowExchange}
           alt={translate('altExchange')}
           width="2.4rem"
           height="2.4rem"
         />
-        <Input />
+
+        <Input
+          currencyCode={currencyIn.toLowerCase() as AcceptedCurrencies}
+          onChangeCurrency={(codeIn) => setCurrencyIn(codeIn)}
+          value={currencyValue}
+        />
       </Flex>
 
       <Heading w="100%" maxW="64rem" color="textPrimary" data-testid="subtitle">
@@ -52,7 +53,7 @@ export default function Home() {
       </Heading>
 
       <Box w="50%">
-        <Chart data={data} />
+        <Chart data={[]} />
       </Box>
 
       <Footer />
