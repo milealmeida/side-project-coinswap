@@ -40,17 +40,19 @@ export const CurrencyProvider = ({ children }: CurrencyProviderProps) => {
   const { mutateAsync } = useMutation(GET_CURRENCY_VALUE);
 
   useEffect(() => {
-    mutateAsync(
-      { coin: currency, coinin: currencyIn },
-      {
-        onSuccess: (ctx) => {
-          const formattedKey = `${currency}${currencyIn}`;
-          const askValue = ctx.data[formattedKey]?.ask;
+    if (currency && currencyIn) {
+      mutateAsync(
+        { coin: currency.toUpperCase(), coinin: currencyIn.toUpperCase() },
+        {
+          onSuccess: (response) => {
+            const formattedKey = `${currency}${currencyIn}`;
+            const askValue = response.data[formattedKey]?.ask;
 
-          setCurrencyValue(askValue);
+            setCurrencyValue(askValue);
+          }
         }
-      }
-    );
+      );
+    }
   }, [currency, currencyIn]);
 
   return (
