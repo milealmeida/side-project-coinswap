@@ -1,5 +1,4 @@
 import { createContext, useContext, useEffect, useState } from 'react';
-import { getUserDefaultCurrency } from 'utils/userUtils';
 
 import { useMutation } from 'react-query';
 import { GET_CURRENCY_VALUE } from 'services/queries';
@@ -12,6 +11,8 @@ export type CurrencyContextData = {
   setCurrencyValue: (value: string) => void;
   setCurrency: (value: string) => void;
   setCurrencyIn: (value: string) => void;
+
+  isLoading: boolean;
 };
 
 export const CurrencyContextDefaultValues: CurrencyContextData = {
@@ -21,7 +22,9 @@ export const CurrencyContextDefaultValues: CurrencyContextData = {
 
   setCurrencyValue: () => null,
   setCurrency: () => null,
-  setCurrencyIn: () => null
+  setCurrencyIn: () => null,
+
+  isLoading: false
 };
 
 export const CurrencyContext = createContext<CurrencyContextData>(
@@ -34,10 +37,10 @@ export type CurrencyProviderProps = {
 
 export const CurrencyProvider = ({ children }: CurrencyProviderProps) => {
   const [currencyValue, setCurrencyValue] = useState('');
-  const [currency, setCurrency] = useState(getUserDefaultCurrency());
+  const [currency, setCurrency] = useState('');
   const [currencyIn, setCurrencyIn] = useState('');
 
-  const { mutateAsync } = useMutation(GET_CURRENCY_VALUE);
+  const { mutateAsync, isLoading } = useMutation(GET_CURRENCY_VALUE);
 
   useEffect(() => {
     if (currency && currencyIn) {
@@ -63,7 +66,8 @@ export const CurrencyProvider = ({ children }: CurrencyProviderProps) => {
         currencyValue,
         setCurrency,
         setCurrencyIn,
-        setCurrencyValue
+        setCurrencyValue,
+        isLoading
       }}
     >
       {children}
