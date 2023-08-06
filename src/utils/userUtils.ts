@@ -9,9 +9,9 @@ export const getNavigatorLanguage = (): AcceptedLanguages => {
 
 export const getUserDefaultCurrency = () => {
   const data = {
-    ptBr: 'BRL',
-    es: 'EUR',
-    en: 'USD'
+    ptBr: 'brl',
+    es: 'eur',
+    en: 'usd'
   };
 
   return data[getNavigatorLanguage()];
