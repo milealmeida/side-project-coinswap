@@ -66,8 +66,9 @@ const InputComponent = () => {
       }}
     >
       <Input
-        p="2.6rem 1.6rem"
-        w="16.2rem"
+        p={{ base: '2.2rem', md: '2.6rem 1.6rem' }}
+        maxW="16.2rem"
+        w="100%"
         fontSize="1.6rem"
         border="none"
         variant="outline"
@@ -84,8 +85,9 @@ const InputComponent = () => {
 
       <Menu>
         <MenuButton
-          p="2.6rem 1.6rem"
-          w="13rem"
+          p={{ base: '2.2rem 1.2rem', md: '2.6rem 1.6rem' }}
+          maxW="13rem"
+          w="100%"
           as={Button}
           rightIcon={<FaChevronDown />}
           bg="transparent"

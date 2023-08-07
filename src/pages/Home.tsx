@@ -32,15 +32,20 @@ export default function Home() {
       height="100vh"
     >
       <Header />
-      <Heading color="primary" data-testid="title">
+      <Heading
+        color="primary"
+        data-testid="title"
+        paddingInline={{ base: '2rem', md: 0 }}
+      >
         {translate('title')}
       </Heading>
 
       <Flex
         alignItems="center"
-        gap="1.6rem"
+        gap={{ base: '1rem', md: '1.6rem' }}
         marginBlock="2rem"
         flexDir={{ base: 'column', md: 'row' }}
+        paddingInline={{ base: '2rem', md: 0 }}
       >
         <Input />
         <Image
@@ -54,7 +59,7 @@ export default function Home() {
 
       <Heading
         w="100%"
-        maxW="64rem"
+        maxW="61rem"
         color="textPrimary"
         data-testid="subtitle"
         textAlign={{ base: 'center', md: 'left' }}
