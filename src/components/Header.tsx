@@ -41,7 +41,7 @@ const Header = () => {
       marginInline="auto"
       alignItems="center"
       justifyContent="space-between"
-      p="4rem"
+      p={{ base: '2rem', md: '4rem' }}
     >
       <Link href="/">
         <Heading>CoinStrap</Heading>
