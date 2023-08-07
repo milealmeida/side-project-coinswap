@@ -1,28 +1,37 @@
+import type { AxiosResponse } from 'axios';
 import { createContext, useContext, useEffect, useState } from 'react';
 
 import { useMutation } from 'react-query';
 import { GET_CURRENCY_VALUE } from 'services/queries';
+import { getUserDefaultCurrency } from 'utils/userUtils';
 
 export type CurrencyContextData = {
-  currencyValue?: string;
-  currency: string;
-  currencyIn: string;
+  currencyValueIn: string;
+  currencyValueOut: string;
 
-  setCurrencyValue: (value: string) => void;
-  setCurrency: (value: string) => void;
-  setCurrencyIn: (value: string) => void;
+  currencyFlagIn: string;
+  currencyFlagOut: string;
+
+  setCurrencyValueIn: (value: string) => void;
+  setCurrencyValueOut: (value: string) => void;
+
+  setCurrencyFlagIn: (value: string) => void;
+  setCurrencyFlagOut: (value: string) => void;
 
   isLoading: boolean;
 };
 
 export const CurrencyContextDefaultValues: CurrencyContextData = {
-  currencyValue: undefined,
-  currency: '',
-  currencyIn: '',
+  currencyValueIn: '',
+  currencyValueOut: '',
 
-  setCurrencyValue: () => null,
-  setCurrency: () => null,
-  setCurrencyIn: () => null,
+  currencyFlagIn: '',
+  currencyFlagOut: '',
+
+  setCurrencyValueIn: () => null,
+  setCurrencyValueOut: () => null,
+  setCurrencyFlagIn: () => null,
+  setCurrencyFlagOut: () => null,
 
   isLoading: false
 };
@@ -36,37 +45,45 @@ export type CurrencyProviderProps = {
 };
 
 export const CurrencyProvider = ({ children }: CurrencyProviderProps) => {
-  const [currencyValue, setCurrencyValue] = useState('');
-  const [currency, setCurrency] = useState('');
-  const [currencyIn, setCurrencyIn] = useState('');
+  const [currencyValueIn, setCurrencyValueIn] = useState('1');
+  const [currencyValueOut, setCurrencyValueOut] = useState('');
+
+  const [currencyFlagIn, setCurrencyFlagIn] = useState(
+    getUserDefaultCurrency()
+  );
+
+  const [currencyFlagOut, setCurrencyFlagOut] = useState(
+    navigator.language === 'en' ? 'eur' : 'usd'
+  );
 
   const { mutateAsync, isLoading } = useMutation(GET_CURRENCY_VALUE);
 
-  useEffect(() => {
-    if (currency && currencyIn) {
-      mutateAsync(
-        { coin: currency.toUpperCase(), coinin: currencyIn.toUpperCase() },
-        {
-          onSuccess: (response) => {
-            const formattedKey = `${currency}${currencyIn}`;
-            const askValue = response.data[formattedKey]?.ask;
+  const onSuccess = async (response: AxiosResponse) => {
+    const formattedKey = `${currencyFlagIn}${currencyFlagOut}`.toUpperCase();
+    const askValue = await response.data[formattedKey]?.ask;
 
-            setCurrencyValue(askValue);
-          }
-        }
-      );
-    }
-  }, [currency, currencyIn]);
+    const convertedValue = (parseFloat(currencyValueIn) * askValue).toFixed(2);
+    setCurrencyValueOut(convertedValue);
+  };
+
+  useEffect(() => {
+    mutateAsync(
+      { coin: currencyFlagIn, coinin: currencyFlagOut },
+      { onSuccess }
+    );
+  }, [currencyFlagIn, currencyFlagOut, currencyValueIn]);
 
   return (
     <CurrencyContext.Provider
       value={{
-        currency,
-        currencyIn,
-        currencyValue,
-        setCurrency,
-        setCurrencyIn,
-        setCurrencyValue,
+        currencyValueIn,
+        currencyValueOut,
+        currencyFlagIn,
+        currencyFlagOut,
+        setCurrencyValueIn,
+        setCurrencyValueOut,
+        setCurrencyFlagIn,
+        setCurrencyFlagOut,
         isLoading
       }}
     >

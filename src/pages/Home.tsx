@@ -10,8 +10,15 @@ import { AcceptedCurrencies } from 'types/acceptedCurrencies';
 export default function Home() {
   const colors = useColorModeValue(light, dark);
   const { t: translate } = useTranslation();
-  const { currencyValue, currency, currencyIn, setCurrency, setCurrencyIn } =
-    useCurrency();
+  const {
+    currencyValueIn,
+    currencyValueOut,
+    currencyFlagIn,
+    currencyFlagOut,
+    setCurrencyFlagIn,
+    setCurrencyFlagOut,
+    setCurrencyValueIn
+  } = useCurrency();
 
   return (
     <Box
@@ -29,9 +36,10 @@ export default function Home() {
 
       <Flex alignItems="center" gap="1.6rem" marginBlock="2rem">
         <Input
-          currencyCode={currency.toLowerCase() as AcceptedCurrencies}
-          onChangeCurrency={(code) => setCurrency(code)}
-          defaultValue={1}
+          defaultValue={currencyValueIn}
+          currencyCode={currencyFlagIn.toLowerCase() as AcceptedCurrencies}
+          onChangeCurrency={(code) => setCurrencyFlagIn(code)}
+          onChange={(event) => setCurrencyValueIn(event.currentTarget.value)}
         />
 
         <Image
@@ -42,9 +50,9 @@ export default function Home() {
         />
 
         <Input
-          currencyCode={currencyIn.toLowerCase() as AcceptedCurrencies}
-          onChangeCurrency={(codeIn) => setCurrencyIn(codeIn)}
-          defaultValue={currencyValue}
+          currencyCode={currencyFlagOut.toLowerCase() as AcceptedCurrencies}
+          onChangeCurrency={(codeIn) => setCurrencyFlagOut(codeIn)}
+          defaultValue={currencyValueOut}
         />
       </Flex>
 
