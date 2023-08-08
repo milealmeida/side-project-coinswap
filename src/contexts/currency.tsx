@@ -1,8 +1,13 @@
-import type { AxiosResponse } from 'axios';
-import { createContext, useContext, useEffect, useState } from 'react';
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+  type ReactNode
+} from 'react';
 
 import { useMutation } from 'react-query';
-import { GET_CURRENCY_VALUE } from 'services/queries';
+import { getCurrencyValue } from 'services/queries';
 import { getUserDefaultCurrency } from 'utils/userUtils';
 
 export type CurrencyContextData = {
@@ -41,7 +46,13 @@ export const CurrencyContext = createContext<CurrencyContextData>(
 );
 
 export type CurrencyProviderProps = {
-  children: React.ReactNode;
+  children: ReactNode;
+};
+
+type OnSuccessData = {
+  [key: string]: {
+    ask: number;
+  };
 };
 
 export const CurrencyProvider = ({ children }: CurrencyProviderProps) => {
@@ -56,11 +67,12 @@ export const CurrencyProvider = ({ children }: CurrencyProviderProps) => {
     navigator.language === 'en' ? 'eur' : 'usd'
   );
 
-  const { mutateAsync, isLoading } = useMutation(GET_CURRENCY_VALUE);
+  const { mutateAsync, isLoading } = useMutation(getCurrencyValue);
 
-  const onSuccess = async (response: AxiosResponse) => {
+  const onSuccess = (data: OnSuccessData) => {
     const formattedKey = `${currencyFlagIn}${currencyFlagOut}`.toUpperCase();
-    const askValue = await response.data[formattedKey]?.ask;
+
+    const askValue = data[formattedKey]?.ask;
 
     const convertedValue = (parseFloat(currencyValueIn) * askValue).toFixed(2);
     setCurrencyValueOut(convertedValue);
@@ -69,7 +81,7 @@ export const CurrencyProvider = ({ children }: CurrencyProviderProps) => {
   useEffect(() => {
     mutateAsync(
       { coin: currencyFlagIn, coinin: currencyFlagOut },
-      { onSuccess }
+      { onSuccess: (response) => onSuccess(response.data) }
     );
   }, [currencyFlagIn, currencyFlagOut, currencyValueIn]);
 

@@ -1,6 +1,6 @@
 import axios from './axios';
 
-export const GET_CURRENCY_VALUE = async ({
+export const getCurrencyValue = async ({
   coin,
   coinin
 }: {

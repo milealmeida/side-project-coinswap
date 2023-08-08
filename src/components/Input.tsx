@@ -51,11 +51,10 @@ const InputComponent = ({
       gbp: country[2],
       chf: country[3],
       jpy: country[4],
-      brl: country[5],
-      defaultFlag: country[6]
+      brl: country[5]
     };
 
-    return countries[currencyKey] ?? countries.defaultFlag;
+    return countries[currencyKey] ?? countries.usd;
   };
 
   return (
@@ -130,22 +129,20 @@ const InputComponent = ({
           onFocus={() => setOutline(true)}
           onBlur={() => setOutline(false)}
         >
-          {content
-            .filter((item) => item.code !== 'default')
-            .map(({ id, code }) => (
-              <MenuItem
-                key={id}
-                p="1.2rem 1.6rem"
-                onClick={() => onChangeCurrency(code.toUpperCase())}
-                css={{
-                  '&:hover, &:focus': {
-                    backgroundColor: '#94A3B8'
-                  }
-                }}
-              >
-                {renderCountryCurrency(code as AcceptedCurrencies)}
-              </MenuItem>
-            ))}
+          {content.map(({ id, code }) => (
+            <MenuItem
+              key={id}
+              p="1.2rem 1.6rem"
+              onClick={() => onChangeCurrency(code.toUpperCase())}
+              css={{
+                '&:hover, &:focus': {
+                  backgroundColor: '#94A3B8'
+                }
+              }}
+            >
+              {renderCountryCurrency(code as AcceptedCurrencies)}
+            </MenuItem>
+          ))}
         </MenuList>
       </Menu>
     </Flex>
