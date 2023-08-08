@@ -30,11 +30,21 @@ export default function Home() {
       height="100vh"
     >
       <Header />
-      <Heading color="primary" data-testid="title">
+      <Heading
+        color="primary"
+        data-testid="title"
+        paddingInline={{ base: '2rem', md: 0 }}
+      >
         {translate('title')}
       </Heading>
 
-      <Flex alignItems="center" gap="1.6rem" marginBlock="2rem">
+      <Flex
+        alignItems="center"
+        gap={{ base: '1rem', md: '1.6rem' }}
+        marginBlock="2rem"
+        flexDir={{ base: 'column', md: 'row' }}
+        paddingInline={{ base: '2rem', md: 0 }}
+      >
         <Input
           defaultValue={currencyValueIn}
           currencyCode={currencyFlagIn.toLowerCase() as AcceptedCurrencies}
@@ -56,11 +66,17 @@ export default function Home() {
         />
       </Flex>
 
-      <Heading w="100%" maxW="64rem" color="textPrimary" data-testid="subtitle">
+      <Heading
+        w="100%"
+        maxW="61rem"
+        color="textPrimary"
+        data-testid="subtitle"
+        textAlign={{ base: 'center', md: 'left' }}
+      >
         {translate('subtitle')}
       </Heading>
 
-      <Box w="50%">
+      <Box w={{ base: '90%', md: '50%' }}>
         <Chart data={[]} />
       </Box>
 
