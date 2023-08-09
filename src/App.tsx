@@ -1,7 +1,12 @@
 import { Home } from 'pages';
+import { CurrencyProvider } from 'contexts/currency.tsx';
 
 function App() {
-  return <Home />;
+  return (
+    <CurrencyProvider>
+      <Home />
+    </CurrencyProvider>
+  );
 }
 
 export default App;
