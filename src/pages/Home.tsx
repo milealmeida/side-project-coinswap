@@ -1,9 +1,16 @@
-import { Box, Flex, Heading, Image, useColorModeValue } from '@chakra-ui/react';
+import {
+  Box,
+  Flex,
+  Heading,
+  useColorModeValue,
+  Icon,
+  Button
+} from '@chakra-ui/react';
 import { useTranslation } from 'react-i18next';
+import { TbArrowsExchange } from 'react-icons/tb';
 
 import { Chart, Footer, Header, Input } from 'components';
 import { dark, light } from 'styles/global';
-import { arrowExchange } from 'assets/img';
 import { useCurrency } from 'contexts/currency';
 import { AcceptedCurrencies } from 'types/acceptedCurrencies';
 
@@ -52,17 +59,20 @@ export default function Home() {
           onChange={(event) => setCurrencyValueIn(event.currentTarget.value)}
         />
 
-        <Image
-          src={arrowExchange}
-          alt={translate('altExchange')}
-          width="2.4rem"
-          height="2.4rem"
-        />
+        <Button bg="transparent">
+          <Icon
+            as={TbArrowsExchange}
+            width="2.4rem"
+            height="2.4rem"
+            color="iconExchange"
+          />
+        </Button>
 
         <Input
           currencyCode={currencyFlagOut.toLowerCase() as AcceptedCurrencies}
           onChangeCurrency={(codeIn) => setCurrencyFlagOut(codeIn)}
           defaultValue={currencyValueOut}
+          disabled
         />
       </Flex>
 

@@ -9,6 +9,4 @@ import ptBr from './pt-br.svg';
 import es from './es.svg';
 import usa from './usa.svg';
 
-import arrowExchange from './arrow-exchange.svg';
-
-export { chf, es, eur, gbp, jpy, ptBr, brl, usa, usd, arrowExchange };
+export { chf, es, eur, gbp, jpy, ptBr, brl, usa, usd };

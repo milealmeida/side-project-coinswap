@@ -85,6 +85,9 @@ const InputComponent = ({
         onFocus={() => setOutline(true)}
         onBlur={() => setOutline(false)}
         isDisabled={isLoading}
+        _disabled={{
+          color: 'textPrimary'
+        }}
       />
 
       <Flex bgColor="middleGray" width="0.1rem" height="2.4rem" />

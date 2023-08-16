@@ -2,7 +2,6 @@ export default {
   translation: {
     title: 'Currency conversion app',
     subtitle: 'Exchange Rate',
-    altExchange: 'Exchange icon',
     select: 'Select',
     flags: {
       brazil: 'Flag of Brazil',
