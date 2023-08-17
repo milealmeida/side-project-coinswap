@@ -1,1 +1,1 @@
-export type AcceptedCurrencies = 'usd' | 'eur' | 'gbp' | 'chf' | 'jpy';
+export type AcceptedCurrencies = 'usd' | 'eur' | 'gbp' | 'chf' | 'jpy' | 'brl';

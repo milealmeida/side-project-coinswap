@@ -10,13 +10,17 @@ import { useTranslation } from 'react-i18next';
 import { TbArrowsExchange } from 'react-icons/tb';
 
 import { Chart, Footer, Header, Input } from 'components';
-import { dark, light } from 'styles/global';
 import { useCurrency } from 'contexts/currency';
 import { AcceptedCurrencies } from 'types/acceptedCurrencies';
+import { getCurrencyFormatted } from 'utils/getCurrencyFormatted';
+
+import { dark, light } from 'styles/global';
 
 export default function Home() {
   const colors = useColorModeValue(light, dark);
+
   const { t: translate } = useTranslation();
+
   const {
     currencyValueIn,
     currencyValueOut,
@@ -24,8 +28,35 @@ export default function Home() {
     currencyFlagOut,
     setCurrencyFlagIn,
     setCurrencyFlagOut,
-    setCurrencyValueIn
+    setCurrencyValueIn,
+    setCurrencyValueOut
   } = useCurrency();
+
+  const handleButtonExchangeClick = () => {
+    const tempCurrencyValueIn = currencyValueIn;
+    const tempCurrencyFlagIn = currencyFlagIn;
+
+    setCurrencyValueIn(currencyValueOut);
+    setCurrencyFlagIn(currencyFlagOut);
+    setCurrencyValueOut(tempCurrencyValueIn);
+    setCurrencyFlagOut(tempCurrencyFlagIn);
+  };
+
+  const handleCurrencyFormatted = (
+    currencyFlag: string,
+    currencyValue: number
+  ) => {
+    const { country, currency } = getCurrencyFormatted(
+      currencyFlag as AcceptedCurrencies
+    );
+
+    const currencyFormatted = new Intl.NumberFormat(country, {
+      style: 'currency',
+      currency
+    }).format(currencyValue);
+
+    return currencyFormatted;
+  };
 
   return (
     <Box
@@ -53,13 +84,15 @@ export default function Home() {
         paddingInline={{ base: '2rem', md: 0 }}
       >
         <Input
-          defaultValue={currencyValueIn}
+          value={handleCurrencyFormatted(
+            currencyFlagIn,
+            Number(currencyValueIn)
+          )}
           currencyCode={currencyFlagIn.toLowerCase() as AcceptedCurrencies}
-          onChangeCurrency={(code) => setCurrencyFlagIn(code)}
-          onChange={(event) => setCurrencyValueIn(event.currentTarget.value)}
+          onChangeCurrency={(codeIn) => setCurrencyFlagIn(codeIn)}
         />
 
-        <Button bg="transparent">
+        <Button bg="transparent" onClick={handleButtonExchangeClick}>
           <Icon
             as={TbArrowsExchange}
             width="2.4rem"
@@ -69,9 +102,12 @@ export default function Home() {
         </Button>
 
         <Input
+          value={handleCurrencyFormatted(
+            currencyFlagOut,
+            Number(currencyValueOut)
+          )}
           currencyCode={currencyFlagOut.toLowerCase() as AcceptedCurrencies}
-          onChangeCurrency={(codeIn) => setCurrencyFlagOut(codeIn)}
-          defaultValue={currencyValueOut}
+          onChangeCurrency={(codeOut) => setCurrencyFlagOut(codeOut)}
           disabled
         />
       </Flex>
