@@ -1,3 +1,4 @@
+import { ChangeEvent, useState } from 'react';
 import {
   Box,
   Flex,
@@ -31,6 +32,16 @@ export default function Home() {
     setCurrencyValueIn,
     setCurrencyValueOut
   } = useCurrency();
+
+  const [isFocused, setIsFocused] = useState(false);
+
+  const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
+    if (!isFocused && event.target.value.trim() === '') {
+      return setCurrencyValueIn('0');
+    }
+
+    return setCurrencyValueIn(event.currentTarget.value);
+  };
 
   const handleButtonExchangeClick = () => {
     const tempCurrencyValueIn = currencyValueIn;
@@ -83,13 +94,18 @@ export default function Home() {
         flexDir={{ base: 'column', md: 'row' }}
         paddingInline={{ base: '2rem', md: 0 }}
       >
-        <Input
-          value={handleCurrencyFormatted(
+        {/* handleCurrencyFormatted(
             currencyFlagIn,
             Number(currencyValueIn)
-          )}
+          ) */}
+
+        <Input
+          value={currencyValueIn}
           currencyCode={currencyFlagIn.toLowerCase() as AcceptedCurrencies}
           onChangeCurrency={(codeIn) => setCurrencyFlagIn(codeIn)}
+          onChange={handleInputChange}
+          onFocus={() => setIsFocused(true)}
+          onBlur={() => setIsFocused(false)}
         />
 
         <Button bg="transparent" onClick={handleButtonExchangeClick}>

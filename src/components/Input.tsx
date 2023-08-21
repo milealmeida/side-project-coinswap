@@ -86,7 +86,7 @@ const InputComponent = ({
         onBlur={() => setOutline(false)}
         isDisabled={isLoading}
         _disabled={{
-          color: 'textPrimary'
+          color: '#0F172A'
         }}
       />
 
