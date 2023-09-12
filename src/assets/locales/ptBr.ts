@@ -8,6 +8,7 @@ export default {
       spain: 'Bandeira da Espanha',
       usa: 'Bandeira dos Estados Unidos'
     },
+    errorMessage: 'Os inputs não podem ser iguais',
     footer: {
       created: 'Criado por',
       and: 'e'

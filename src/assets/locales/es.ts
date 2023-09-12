@@ -8,6 +8,7 @@ export default {
       spain: 'Bandera Española',
       usa: 'Bandera de los Estados Unidos'
     },
+    errorMessage: 'Las entradas no pueden ser las mismas.',
     footer: {
       created: 'Criado por',
       and: 'y'

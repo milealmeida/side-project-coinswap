@@ -1,11 +1,12 @@
-import { ChangeEvent, useState } from 'react';
+import { ChangeEvent, useEffect, useState } from 'react';
 import {
   Box,
   Flex,
   Heading,
   useColorModeValue,
   Icon,
-  Button
+  Button,
+  Text
 } from '@chakra-ui/react';
 import { useTranslation } from 'react-i18next';
 import { TbArrowsExchange } from 'react-icons/tb';
@@ -34,6 +35,7 @@ export default function Home() {
   } = useCurrency();
 
   const [isFocused, setIsFocused] = useState(false);
+  const [isSameFlag, setIsSameFlag] = useState(false);
 
   const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
     if (!isFocused && event.target.value.trim() === '') {
@@ -69,6 +71,16 @@ export default function Home() {
     return currencyFormatted;
   };
 
+  useEffect(() => {
+    if (currencyFlagIn.toLowerCase() === currencyFlagOut) {
+      setIsSameFlag(true);
+
+      return;
+    }
+
+    setIsSameFlag(false);
+  }, [currencyFlagIn, currencyFlagOut]);
+
   return (
     <Box
       bg={colors.bgColor}
@@ -88,6 +100,7 @@ export default function Home() {
       </Heading>
 
       <Flex
+        position="relative"
         alignItems="center"
         gap={{ base: '1rem', md: '1.6rem' }}
         marginBlock="2rem"
@@ -126,6 +139,18 @@ export default function Home() {
           onChangeCurrency={(codeOut) => setCurrencyFlagOut(codeOut)}
           disabled
         />
+
+        {isSameFlag && (
+          <Text
+            position="absolute"
+            top="6rem"
+            right="0"
+            fontSize="lg"
+            color="red"
+          >
+            {translate('errorMessage')}
+          </Text>
+        )}
       </Flex>
 
       <Heading
