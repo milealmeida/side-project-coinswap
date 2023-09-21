@@ -10,7 +10,8 @@ import {
   Menu,
   MenuButton,
   MenuItem,
-  MenuList
+  MenuList,
+  useColorMode
 } from '@chakra-ui/react';
 
 import { AcceptedCurrencies } from 'types/acceptedCurrencies';
@@ -27,6 +28,7 @@ const InputComponent = ({
   onChangeCurrency,
   ...rest
 }: InputComponentProps) => {
+  const { colorMode } = useColorMode();
   const [outline, setOutline] = useState(false);
   const { isLoading } = useCurrency();
 
@@ -57,6 +59,8 @@ const InputComponent = ({
     return countries[currencyKey] ?? countries.usd;
   };
 
+  const { onFocus, onBlur } = rest;
+
   return (
     <Flex
       borderRadius="0.8rem"
@@ -82,11 +86,17 @@ const InputComponent = ({
         {...rest}
         type="text"
         size="lg"
-        onFocus={() => setOutline(true)}
-        onBlur={() => setOutline(false)}
         isDisabled={isLoading}
         _disabled={{
-          color: '#0F172A'
+          color: colorMode === 'light' ? '#0F172A' : '#fff'
+        }}
+        onBlur={(event) => {
+          setOutline(false);
+          onBlur && onBlur(event);
+        }}
+        onFocus={(event) => {
+          setOutline(true);
+          onFocus && onFocus(event);
         }}
       />
 
