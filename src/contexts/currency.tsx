@@ -71,7 +71,6 @@ export const CurrencyProvider = ({ children }: CurrencyProviderProps) => {
 
   const onSuccess = (data: OnSuccessData) => {
     const formattedKey = `${currencyFlagIn}${currencyFlagOut}`.toUpperCase();
-
     const askValue = data[formattedKey]?.ask;
 
     const convertedValue = (parseFloat(currencyValueIn) * askValue).toFixed(2);
@@ -79,6 +78,11 @@ export const CurrencyProvider = ({ children }: CurrencyProviderProps) => {
   };
 
   useEffect(() => {
+    const regex = /[a-zA-ZÀ-ÖØ-öø-ÿ\s!@#$%^&*()_+{}\[\]:;<>,.?~\\-]/g;
+    const isSpecialChar = regex.test(currencyValueIn);
+
+    if (isSpecialChar) return;
+
     mutateAsync(
       { coin: currencyFlagIn, coinin: currencyFlagOut },
       { onSuccess: (response) => onSuccess(response.data) }
