@@ -30,7 +30,7 @@ const Footer = () => {
         <AvatarGroup>
           {contributors.map(({ fullName, githubUsername }) => (
             <Avatar
-              key={`Avatar of ${fullName}`}
+              key={`${translate('footer.keyTitle')} ${fullName}`}
               fullName={fullName}
               githubUsername={githubUsername}
             />
