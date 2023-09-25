@@ -11,7 +11,8 @@ export default {
     },
     footer: {
       created: 'Created by',
-      and: 'and'
+      and: 'and',
+      keyTitle: 'Avatar of'
     }
   }
 };
