@@ -64,7 +64,7 @@ export const CurrencyProvider = ({ children }: CurrencyProviderProps) => {
   );
 
   const [currencyFlagOut, setCurrencyFlagOut] = useState(
-    navigator.language === 'en' ? 'eur' : 'usd'
+    navigator.language.substring(0, 2) === 'en' ? 'eur' : 'usd'
   );
 
   const { mutateAsync, isLoading } = useMutation(getCurrencyValue);

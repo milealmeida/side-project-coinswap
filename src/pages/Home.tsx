@@ -1,4 +1,7 @@
 import { ChangeEvent, useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { TbArrowsExchange } from 'react-icons/tb';
+
 import {
   Box,
   Flex,
@@ -8,8 +11,6 @@ import {
   Button,
   Text
 } from '@chakra-ui/react';
-import { useTranslation } from 'react-i18next';
-import { TbArrowsExchange } from 'react-icons/tb';
 
 import { Chart, Footer, Header, Input } from 'components';
 import { useCurrency } from 'contexts/currency';
@@ -33,37 +34,52 @@ export default function Home() {
     setCurrencyValueOut
   } = useCurrency();
 
-  const [isFocused, setIsFocused] = useState(false);
   const [isSameFlag, setIsSameFlag] = useState(false);
 
   const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
-    if (!isFocused && event.target.value.trim() === '')
-      return setCurrencyValueIn('0');
+    const value = event.currentTarget?.value;
+    let teste = value;
 
-    const formattedValueIn = event.currentTarget?.value?.replace(/\D/g, '');
-    return setCurrencyValueIn(formattedValueIn);
+    if (value.length === 2 && value[0] === '0') {
+      teste = teste.substring(1);
+    }
+
+    const formattedValueIn = teste?.replace(/\D,\,/g, '');
+    setCurrencyValueIn(formattedValueIn);
+  };
+
+  const formattedValue = (value: string) => {
+    const valueFormatted = value.replace(/[^0-9,\.]/g, '').replace(',', '.');
+
+    const formattedValue = maskCurrency(
+      currencyFlagIn,
+      Number(valueFormatted.replace(',', '.'))
+    );
+
+    setCurrencyValueIn(formattedValue);
   };
 
   const handleOnFocus = (event: ChangeEvent<HTMLInputElement>) => {
-    event.target.select();
-    setIsFocused(true);
+    const value = event.target;
+
+    const formattedValueIn = value.value?.replace(/[^0-9,]/g, '');
+
+    setCurrencyValueIn(formattedValueIn);
   };
 
   const handleOnBlur = (event: ChangeEvent<HTMLInputElement>) => {
-    // REMOVER MASCARA ANTES DE FAZER FORMATACAO
+    const value = event.currentTarget?.value;
 
-    console.log('valueIn', currencyValueIn);
-    console.log('event.currentTarget?.value', event.currentTarget?.value);
+    if (value.trim() === '') return setCurrencyValueIn('R$ 0,00');
 
-    const test = event.currentTarget?.value.replace(/\D/g, '');
-    // const formattedValue = maskCurrency(currencyFlagIn, Number(test));
-
-    setCurrencyValueIn(event.currentTarget?.value);
-    setIsFocused(false);
+    formattedValue(value);
   };
 
   const handleButtonExchangeClick = () => {
-    const tempCurrencyValueIn = currencyValueIn;
+    const tempCurrencyValueIn = currencyValueIn
+      .replace(/[^0-9,\.]/g, '')
+      .replace(',', '.');
+
     const tempCurrencyFlagIn = currencyFlagIn;
 
     setCurrencyValueIn(currencyValueOut);
@@ -73,10 +89,12 @@ export default function Home() {
   };
 
   useEffect(() => {
-    if (currencyFlagIn.toLowerCase() === currencyFlagOut)
+    if (currencyFlagIn.toLowerCase() === currencyFlagOut.toLowerCase()) {
       return setIsSameFlag(true);
+    }
 
     setIsSameFlag(false);
+    formattedValue(currencyValueIn);
   }, [currencyFlagIn, currencyFlagOut]);
 
   return (
@@ -108,10 +126,13 @@ export default function Home() {
         <Input
           className="inputCurrencyFlagIn"
           currencyCode={currencyFlagIn.toLowerCase() as AcceptedCurrencies}
-          onChangeCurrency={(codeIn) => setCurrencyFlagIn(codeIn)}
+          onChangeCurrency={(codeIn) => {
+            setCurrencyFlagIn(codeIn);
+          }}
           onChange={handleInputChange}
           onBlur={handleOnBlur}
           onFocus={handleOnFocus}
+          onClick={(event) => event.currentTarget.select()}
           value={currencyValueIn}
         />
 
