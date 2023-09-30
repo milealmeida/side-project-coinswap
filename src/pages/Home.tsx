@@ -125,15 +125,15 @@ export default function Home() {
       >
         <Input
           className="inputCurrencyFlagIn"
+          onChange={handleInputChange}
+          onBlur={handleOnBlur}
+          onFocus={handleOnFocus}
+          value={currencyValueIn}
+          onClick={(event) => event.currentTarget.select()}
           currencyCode={currencyFlagIn.toLowerCase() as AcceptedCurrencies}
           onChangeCurrency={(codeIn) => {
             setCurrencyFlagIn(codeIn);
           }}
-          onChange={handleInputChange}
-          onBlur={handleOnBlur}
-          onFocus={handleOnFocus}
-          onClick={(event) => event.currentTarget.select()}
-          value={currencyValueIn}
         />
 
         <Button bg="transparent" onClick={handleButtonExchangeClick}>
@@ -148,10 +148,10 @@ export default function Home() {
         <Input
           disabled
           currencyCode={currencyFlagOut.toLowerCase() as AcceptedCurrencies}
+          value={maskCurrency(currencyFlagOut, Number(currencyValueOut))}
           onChangeCurrency={(codeOut) => {
             setCurrencyFlagOut(codeOut);
           }}
-          value={maskCurrency(currencyFlagOut, Number(currencyValueOut))}
         />
 
         {isSameFlag && (

@@ -1,3 +1,4 @@
+import { useDebounce } from '@uidotdev/usehooks';
 import {
   createContext,
   useContext,
@@ -6,7 +7,6 @@ import {
   type ReactNode
 } from 'react';
 
-import { useMutation } from 'react-query';
 import { getCurrencyValue } from 'services/queries';
 import { getUserDefaultCurrency } from 'utils/userUtils';
 
@@ -49,15 +49,18 @@ export type CurrencyProviderProps = {
   children: ReactNode;
 };
 
-type OnSuccessData = {
+type HandleOnSuccessData = {
   [key: string]: {
     ask: number;
   };
 };
 
 export const CurrencyProvider = ({ children }: CurrencyProviderProps) => {
+  const [isLoading, setIsLoading] = useState(false);
   const [currencyValueIn, setCurrencyValueIn] = useState('1');
   const [currencyValueOut, setCurrencyValueOut] = useState('');
+
+  const debouncedValueIn = useDebounce(currencyValueIn, 500);
 
   const [currencyFlagIn, setCurrencyFlagIn] = useState(
     getUserDefaultCurrency()
@@ -67,9 +70,7 @@ export const CurrencyProvider = ({ children }: CurrencyProviderProps) => {
     navigator.language.substring(0, 2) === 'en' ? 'eur' : 'usd'
   );
 
-  const { mutateAsync, isLoading } = useMutation(getCurrencyValue);
-
-  const onSuccess = (data: OnSuccessData) => {
+  const handleOnSuccess = (data: HandleOnSuccessData) => {
     const formattedKey = `${currencyFlagIn}${currencyFlagOut}`.toUpperCase();
     const askValue = data[formattedKey]?.ask;
 
@@ -77,17 +78,32 @@ export const CurrencyProvider = ({ children }: CurrencyProviderProps) => {
     setCurrencyValueOut(convertedValue);
   };
 
-  useEffect(() => {
+  const handleGetCurrencyValue = async () => {
     const regex = /[a-zA-ZÀ-ÖØ-öø-ÿ\s!@#$%^&*()_+{}\[\]:;<>,.?~\\-]/g;
     const isSpecialChar = regex.test(currencyValueIn);
-
     if (isSpecialChar) return;
 
-    mutateAsync(
-      { coin: currencyFlagIn, coinin: currencyFlagOut },
-      { onSuccess: (response) => onSuccess(response.data) }
-    );
-  }, [currencyFlagIn, currencyFlagOut, currencyValueIn]);
+    if (debouncedValueIn && !isSpecialChar) {
+      try {
+        setIsLoading(true);
+
+        const { data } = await getCurrencyValue({
+          coin: currencyFlagIn,
+          coinin: currencyFlagOut
+        });
+
+        handleOnSuccess(data);
+      } catch (error) {
+        console.error(`Ops... Something went wrong!`, error);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+  };
+
+  useEffect(() => {
+    handleGetCurrencyValue();
+  }, [debouncedValueIn]);
 
   return (
     <CurrencyContext.Provider
@@ -101,6 +117,7 @@ export const CurrencyProvider = ({ children }: CurrencyProviderProps) => {
         setCurrencyFlagIn,
         setCurrencyFlagOut,
         isLoading
+        // isLoading: false
       }}
     >
       {children}
