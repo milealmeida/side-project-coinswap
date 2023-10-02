@@ -38,13 +38,18 @@ export default function Home() {
 
   const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
     const value = event.currentTarget?.value;
-    let teste = value;
+    let tempValue = value;
 
     if (value.length === 2 && value[0] === '0') {
-      teste = teste.substring(1);
+      tempValue = tempValue.substring(1);
     }
 
-    const formattedValueIn = teste?.replace(/\D,\,/g, '');
+    let formattedValueIn = tempValue?.replace(/[^0-9,]/g, '');
+    if ((formattedValueIn.match(/,/g) || []).length > 1) {
+      const parts = formattedValueIn.split(',');
+      formattedValueIn = parts[0] + ',' + parts.slice(1).join('');
+    }
+
     setCurrencyValueIn(formattedValueIn);
   };
 
@@ -60,16 +65,12 @@ export default function Home() {
   };
 
   const handleOnFocus = (event: ChangeEvent<HTMLInputElement>) => {
-    const value = event.target;
-
-    const formattedValueIn = value.value?.replace(/[^0-9,]/g, '');
-
+    const formattedValueIn = event.target.value?.replace(/[^0-9,]/g, '');
     setCurrencyValueIn(formattedValueIn);
   };
 
   const handleOnBlur = (event: ChangeEvent<HTMLInputElement>) => {
     const value = event.currentTarget?.value;
-
     if (value.trim() === '') return setCurrencyValueIn('R$ 0,00');
 
     formattedValue(value);

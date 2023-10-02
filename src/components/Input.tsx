@@ -16,7 +16,6 @@ import {
 
 import { AcceptedCurrencies } from 'types/acceptedCurrencies';
 import { content } from 'utils/content';
-import { useCurrency } from 'contexts/currency';
 
 export type InputComponentProps = {
   currencyCode: AcceptedCurrencies;
@@ -30,7 +29,6 @@ const InputComponent = ({
 }: InputComponentProps) => {
   const { colorMode } = useColorMode();
   const [outline, setOutline] = useState(false);
-  const { isLoading } = useCurrency();
 
   const renderCountryCurrency = (currencyKey: AcceptedCurrencies) => {
     const country = content.map((item) => (
@@ -86,7 +84,6 @@ const InputComponent = ({
         {...rest}
         type="text"
         size="lg"
-        isDisabled={isLoading}
         _disabled={{
           color: colorMode === 'light' ? '#0F172A' : '#fff'
         }}
@@ -104,7 +101,6 @@ const InputComponent = ({
 
       <Menu>
         <MenuButton
-          isDisabled={isLoading}
           p={{ base: '2.2rem 1.2rem', md: '2.6rem 1.6rem' }}
           maxW="13rem"
           w="100%"

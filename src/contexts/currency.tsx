@@ -22,8 +22,6 @@ export type CurrencyContextData = {
 
   setCurrencyFlagIn: (value: string) => void;
   setCurrencyFlagOut: (value: string) => void;
-
-  isLoading: boolean;
 };
 
 export const CurrencyContextDefaultValues: CurrencyContextData = {
@@ -36,9 +34,7 @@ export const CurrencyContextDefaultValues: CurrencyContextData = {
   setCurrencyValueIn: () => null,
   setCurrencyValueOut: () => null,
   setCurrencyFlagIn: () => null,
-  setCurrencyFlagOut: () => null,
-
-  isLoading: false
+  setCurrencyFlagOut: () => null
 };
 
 export const CurrencyContext = createContext<CurrencyContextData>(
@@ -56,54 +52,57 @@ type HandleOnSuccessData = {
 };
 
 export const CurrencyProvider = ({ children }: CurrencyProviderProps) => {
-  const [isLoading, setIsLoading] = useState(false);
   const [currencyValueIn, setCurrencyValueIn] = useState('1');
   const [currencyValueOut, setCurrencyValueOut] = useState('');
-
-  const debouncedValueIn = useDebounce(currencyValueIn, 500);
 
   const [currencyFlagIn, setCurrencyFlagIn] = useState(
     getUserDefaultCurrency()
   );
-
   const [currencyFlagOut, setCurrencyFlagOut] = useState(
     navigator.language.substring(0, 2) === 'en' ? 'eur' : 'usd'
   );
+
+  const debouncedValueIn = useDebounce(currencyValueIn, 500);
+  const debouncedFlagIn = useDebounce(currencyFlagIn, 500);
+  const debouncedFlagOut = useDebounce(currencyFlagOut, 500);
 
   const handleOnSuccess = (data: HandleOnSuccessData) => {
     const formattedKey = `${currencyFlagIn}${currencyFlagOut}`.toUpperCase();
     const askValue = data[formattedKey]?.ask;
 
-    const convertedValue = (parseFloat(currencyValueIn) * askValue).toFixed(2);
+    const formattedCurrencyValueIn = currencyValueIn
+      .replace(/[^0-9,\.]/g, '')
+      .replace(',', '.');
+
+    const convertedValue = (
+      parseFloat(formattedCurrencyValueIn) * askValue
+    ).toFixed(2);
     setCurrencyValueOut(convertedValue);
   };
 
   const handleGetCurrencyValue = async () => {
-    const regex = /[a-zA-ZÀ-ÖØ-öø-ÿ\s!@#$%^&*()_+{}\[\]:;<>,.?~\\-]/g;
-    const isSpecialChar = regex.test(currencyValueIn);
-    if (isSpecialChar) return;
+    const formattedValue = debouncedValueIn
+      .replace(/[^0-9,\.]/g, '')
+      .replace(',', '.');
 
-    if (debouncedValueIn && !isSpecialChar) {
+    const hasValidValue = formattedValue || debouncedFlagIn || debouncedFlagOut;
+    if (hasValidValue) {
       try {
-        setIsLoading(true);
-
         const { data } = await getCurrencyValue({
-          coin: currencyFlagIn,
-          coinin: currencyFlagOut
+          coin: currencyFlagIn.toLowerCase(),
+          coinin: currencyFlagOut.toLowerCase()
         });
 
         handleOnSuccess(data);
       } catch (error) {
         console.error(`Ops... Something went wrong!`, error);
-      } finally {
-        setIsLoading(false);
       }
     }
   };
 
   useEffect(() => {
     handleGetCurrencyValue();
-  }, [debouncedValueIn]);
+  }, [debouncedValueIn, debouncedFlagIn, debouncedFlagOut]);
 
   return (
     <CurrencyContext.Provider
@@ -115,9 +114,7 @@ export const CurrencyProvider = ({ children }: CurrencyProviderProps) => {
         setCurrencyValueIn,
         setCurrencyValueOut,
         setCurrencyFlagIn,
-        setCurrencyFlagOut,
-        isLoading
-        // isLoading: false
+        setCurrencyFlagOut
       }}
     >
       {children}
