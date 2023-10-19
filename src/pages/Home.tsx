@@ -1,4 +1,4 @@
-import { ChangeEvent, useEffect, useState } from 'react';
+import { ChangeEvent, useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { TbArrowsExchange } from 'react-icons/tb';
 
@@ -65,7 +65,7 @@ export default function Home() {
   };
 
   const handleOnFocus = (event: ChangeEvent<HTMLInputElement>) => {
-    const formattedValueIn = event.target.value?.replace(/[^0-9,]/g, '');
+    const formattedValueIn = event.target.value?.replace(/[^0-9,.]/g, '');
     setCurrencyValueIn(formattedValueIn);
   };
 
@@ -97,6 +97,21 @@ export default function Home() {
     setIsSameFlag(false);
     formattedValue(currencyValueIn);
   }, [currencyFlagIn, currencyFlagOut]);
+
+  const getFormattedValue = useCallback((value: string) => {
+    return value
+      .toString()
+      .replace(/[^0-9,\.]/g, '')
+      .replace(',', '.');
+  }, []);
+
+  const data = [
+    {
+      name: 'Moeda',
+      [currencyFlagIn]: getFormattedValue(currencyValueIn),
+      [currencyFlagOut]: getFormattedValue(currencyValueOut)
+    }
+  ];
 
   return (
     <Box
@@ -178,9 +193,7 @@ export default function Home() {
         {translate('subtitle')}
       </Heading>
 
-      <Box w={{ base: '90%', md: '50%' }}>
-        <Chart data={[]} />
-      </Box>
+      <Chart data={data} />
 
       <Footer />
     </Box>
