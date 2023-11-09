@@ -1,4 +1,5 @@
 import { useDebounce } from '@uidotdev/usehooks';
+import { maskCurrency } from 'hooks/Masks';
 import {
   createContext,
   useContext,
@@ -12,6 +13,7 @@ import { getUserDefaultCurrency } from 'utils/userUtils';
 
 export type CurrencyContextData = {
   currencyValueIn: string;
+  currencyValueInFormatted: string;
   currencyValueOut: string;
 
   currencyFlagIn: string;
@@ -26,6 +28,7 @@ export type CurrencyContextData = {
 
 export const CurrencyContextDefaultValues: CurrencyContextData = {
   currencyValueIn: '',
+  currencyValueInFormatted: '',
   currencyValueOut: '',
 
   currencyFlagIn: '',
@@ -53,6 +56,7 @@ type HandleOnSuccessData = {
 
 export const CurrencyProvider = ({ children }: CurrencyProviderProps) => {
   const [currencyValueIn, setCurrencyValueIn] = useState('1');
+
   const [currencyValueOut, setCurrencyValueOut] = useState('');
 
   const [currencyFlagIn, setCurrencyFlagIn] = useState(
@@ -62,6 +66,11 @@ export const CurrencyProvider = ({ children }: CurrencyProviderProps) => {
     navigator.language.substring(0, 2) === 'en' ? 'eur' : 'usd'
   );
 
+  const teste = maskCurrency(currencyFlagIn, Number(currencyValueIn));
+
+  const [currencyValueInFormatted, setCurrencyValueInFormatted] =
+    useState(teste);
+
   const debouncedValueIn = useDebounce(currencyValueIn, 500);
   const debouncedFlagIn = useDebounce(currencyFlagIn, 500);
   const debouncedFlagOut = useDebounce(currencyFlagOut, 500);
@@ -70,22 +79,13 @@ export const CurrencyProvider = ({ children }: CurrencyProviderProps) => {
     const formattedKey = `${currencyFlagIn}${currencyFlagOut}`.toUpperCase();
     const askValue = data[formattedKey]?.ask;
 
-    const formattedCurrencyValueIn = currencyValueIn
-      .replace(/[^0-9,\.]/g, '')
-      .replace(',', '.');
-
-    const convertedValue = (
-      parseFloat(formattedCurrencyValueIn) * askValue
-    ).toFixed(2);
+    const convertedValue = (parseFloat(currencyValueIn) * askValue).toFixed(2);
     setCurrencyValueOut(convertedValue);
   };
 
   const handleGetCurrencyValue = async () => {
-    const formattedValue = debouncedValueIn
-      .replace(/[^0-9,\.]/g, '')
-      .replace(',', '.');
-
-    const hasValidValue = formattedValue || debouncedFlagIn || debouncedFlagOut;
+    const hasValidValue =
+      debouncedValueIn || debouncedFlagIn || debouncedFlagOut;
     if (hasValidValue) {
       try {
         const { data } = await getCurrencyValue({
@@ -100,14 +100,25 @@ export const CurrencyProvider = ({ children }: CurrencyProviderProps) => {
     }
   };
 
+  const handleTeste = () => {
+    setCurrencyValueInFormatted(
+      maskCurrency(currencyFlagIn, Number(currencyValueIn))
+    );
+  };
+
   useEffect(() => {
     handleGetCurrencyValue();
   }, [debouncedValueIn, debouncedFlagIn, debouncedFlagOut]);
+
+  useEffect(() => {
+    handleTeste();
+  }, [currencyValueIn, currencyFlagIn]);
 
   return (
     <CurrencyContext.Provider
       value={{
         currencyValueIn,
+        currencyValueInFormatted,
         currencyValueOut,
         currencyFlagIn,
         currencyFlagOut,

@@ -19,11 +19,13 @@ import { content } from 'utils/content';
 
 export type InputComponentProps = {
   currencyCode: AcceptedCurrencies;
+  reference?: any;
   onChangeCurrency: (code: string) => void;
 } & InputHTMLAttributes<HTMLInputElement>;
 
 const InputComponent = ({
   currencyCode,
+  reference,
   onChangeCurrency,
   ...rest
 }: InputComponentProps) => {
@@ -72,6 +74,7 @@ const InputComponent = ({
       }}
     >
       <Input
+        ref={reference}
         p={{ base: '2.2rem', md: '2.6rem 1.6rem' }}
         maxW="16.2rem"
         w="100%"

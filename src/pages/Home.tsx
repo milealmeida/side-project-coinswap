@@ -1,4 +1,4 @@
-import { ChangeEvent, useCallback, useEffect, useState } from 'react';
+import { ChangeEvent, useRef, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { TbArrowsExchange } from 'react-icons/tb';
 
@@ -25,6 +25,7 @@ export default function Home() {
 
   const {
     currencyValueIn,
+    currencyValueInFormatted,
     currencyValueOut,
     currencyFlagIn,
     currencyFlagOut,
@@ -35,6 +36,9 @@ export default function Home() {
   } = useCurrency();
 
   const [isSameFlag, setIsSameFlag] = useState(false);
+  const [isFocused, setIsFocused] = useState(false);
+
+  const inputCurrencyValueInRef = useRef<HTMLInputElement>(null);
 
   const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
     const value = event.currentTarget?.value;
@@ -44,42 +48,21 @@ export default function Home() {
       tempValue = tempValue.substring(1);
     }
 
-    let formattedValueIn = tempValue?.replace(/[^0-9,]/g, '');
-    if ((formattedValueIn.match(/,/g) || []).length > 1) {
-      const parts = formattedValueIn.split(',');
-      formattedValueIn = parts[0] + ',' + parts.slice(1).join('');
-    }
-
-    setCurrencyValueIn(formattedValueIn);
-  };
-
-  const formattedValue = (value: string) => {
-    const valueFormatted = value.replace(/[^0-9,\.]/g, '').replace(',', '.');
-
-    const formattedValue = maskCurrency(
-      currencyFlagIn,
-      Number(valueFormatted.replace(',', '.'))
-    );
-
-    setCurrencyValueIn(formattedValue);
+    setCurrencyValueIn(tempValue);
   };
 
   const handleOnFocus = (event: ChangeEvent<HTMLInputElement>) => {
-    const formattedValueIn = event.target.value?.replace(/[^0-9,.]/g, '');
+    const formattedValueIn = event.target.value;
     setCurrencyValueIn(formattedValueIn);
   };
 
   const handleOnBlur = (event: ChangeEvent<HTMLInputElement>) => {
     const value = event.currentTarget?.value;
     if (value.trim() === '') return setCurrencyValueIn('R$ 0,00');
-
-    formattedValue(value);
   };
 
   const handleButtonExchangeClick = () => {
-    const tempCurrencyValueIn = currencyValueIn
-      .replace(/[^0-9,\.]/g, '')
-      .replace(',', '.');
+    const tempCurrencyValueIn = currencyValueIn;
 
     const tempCurrencyFlagIn = currencyFlagIn;
 
@@ -89,27 +72,24 @@ export default function Home() {
     setCurrencyFlagOut(tempCurrencyFlagIn);
   };
 
+  const handleIsFocused = () => {
+    setIsFocused(true);
+    inputCurrencyValueInRef.current?.focus();
+  };
+
   useEffect(() => {
     if (currencyFlagIn.toLowerCase() === currencyFlagOut.toLowerCase()) {
       return setIsSameFlag(true);
     }
 
     setIsSameFlag(false);
-    formattedValue(currencyValueIn);
   }, [currencyFlagIn, currencyFlagOut]);
-
-  const getFormattedValue = useCallback((value: string) => {
-    return value
-      .toString()
-      .replace(/[^0-9,\.]/g, '')
-      .replace(',', '.');
-  }, []);
 
   const data = [
     {
       name: 'Moeda',
-      [currencyFlagIn]: getFormattedValue(currencyValueIn),
-      [currencyFlagOut]: getFormattedValue(currencyValueOut)
+      [currencyFlagIn]: currencyValueIn,
+      [currencyFlagOut]: currencyValueOut
     }
   ];
 
@@ -139,18 +119,39 @@ export default function Home() {
         flexDir={{ base: 'column', md: 'row' }}
         paddingInline={{ base: '2rem', md: 0 }}
       >
-        <Input
-          className="inputCurrencyFlagIn"
-          onChange={handleInputChange}
-          onBlur={handleOnBlur}
-          onFocus={handleOnFocus}
-          value={currencyValueIn}
-          onClick={(event) => event.currentTarget.select()}
-          currencyCode={currencyFlagIn.toLowerCase() as AcceptedCurrencies}
-          onChangeCurrency={(codeIn) => {
-            setCurrencyFlagIn(codeIn);
-          }}
-        />
+        <div style={{ position: 'relative' }}>
+          <Input
+            reference={inputCurrencyValueInRef}
+            className="inputCurrencyFlagIn"
+            onChange={handleInputChange}
+            onBlur={(e) => {
+              handleOnBlur(e);
+              setIsFocused(false);
+            }}
+            onFocus={handleOnFocus}
+            value={currencyValueIn}
+            onClick={(event) => event.currentTarget.select()}
+            currencyCode={currencyFlagIn.toLowerCase() as AcceptedCurrencies}
+            onChangeCurrency={(codeIn) => {
+              setCurrencyFlagIn(codeIn);
+            }}
+          />
+
+          {!isFocused && (
+            <Flex
+              onClick={handleIsFocused}
+              bg={colors.bgColor}
+              width="45%"
+              height="3rem"
+              position="absolute"
+              top={{ base: '1.2rem', md: '1.5rem' }}
+              left={{ base: '1.8rem', md: '1.8rem' }}
+              fontSize="1.6rem"
+            >
+              {currencyValueInFormatted}
+            </Flex>
+          )}
+        </div>
 
         <Button bg="transparent" onClick={handleButtonExchangeClick}>
           <Icon
