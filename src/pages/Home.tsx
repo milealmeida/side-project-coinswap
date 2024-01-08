@@ -44,7 +44,7 @@ export default function Home() {
       tempValue = tempValue.substring(1);
     }
 
-    let formattedValueIn = tempValue?.replace(/[^0-9,]/g, '');
+    let formattedValueIn = tempValue?.replace(/[^0-9,.]/g, '');
     if ((formattedValueIn.match(/,/g) || []).length > 1) {
       const parts = formattedValueIn.split(',');
       formattedValueIn = parts[0] + ',' + parts.slice(1).join('');
@@ -54,6 +54,7 @@ export default function Home() {
   };
 
   const formattedValue = (value: string) => {
+    //TODO: Marcos mendes, refactor regex
     const valueFormatted = value.replace(/[^0-9,\.]/g, '').replace(',', '.');
 
     const formattedValue = maskCurrency(
@@ -65,7 +66,12 @@ export default function Home() {
   };
 
   const handleOnFocus = (event: ChangeEvent<HTMLInputElement>) => {
-    const formattedValueIn = event.target.value?.replace(/[^0-9,.]/g, '');
+    let formattedValueIn = event.target.value?.replace(/[^0-9,.]/g, '');
+    if ((formattedValueIn.match(/,/g) || []).length > 1) {
+      const parts = formattedValueIn.split(',');
+      formattedValueIn = parts[0] + ',' + parts.slice(1).join('');
+    }
+
     setCurrencyValueIn(formattedValueIn);
   };
 

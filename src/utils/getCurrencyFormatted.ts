@@ -36,3 +36,11 @@ export const getCurrencyFormatted = (currency: AcceptedCurrencies) => {
 
   return currencies[currency];
 };
+
+export function reverseFormatNumber(value: string, locale: string) {
+  const group = new Intl.NumberFormat(locale).format(1111).replace(/1/g, '');
+  const decimal = new Intl.NumberFormat(locale).format(1.1).replace(/1/g, '');
+  let reversedValue = value.replace(new RegExp('\\' + group, 'g'), '');
+  reversedValue = reversedValue.replace(new RegExp('\\' + decimal, 'g'), '.');
+  return Number.isNaN(reversedValue) ? '0' : reversedValue;
+}

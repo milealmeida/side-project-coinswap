@@ -8,6 +8,11 @@ import {
 } from 'react';
 
 import { getCurrencyValue } from 'services/queries';
+import { AcceptedCurrencies } from 'types/acceptedCurrencies';
+import {
+  getCurrencyFormatted,
+  reverseFormatNumber
+} from 'utils/getCurrencyFormatted';
 import { getUserDefaultCurrency } from 'utils/userUtils';
 
 export type CurrencyContextData = {
@@ -70,9 +75,12 @@ export const CurrencyProvider = ({ children }: CurrencyProviderProps) => {
     const formattedKey = `${currencyFlagIn}${currencyFlagOut}`.toUpperCase();
     const askValue = data[formattedKey]?.ask;
 
-    const formattedCurrencyValueIn = currencyValueIn
-      .replace(/[^0-9,\.]/g, '')
-      .replace(',', '.');
+    const flagIn = currencyFlagIn.toLowerCase() as AcceptedCurrencies;
+
+    const formattedCurrencyValueIn = reverseFormatNumber(
+      currencyValueIn.replace(/[^0-9,\.]/g, ''),
+      getCurrencyFormatted(flagIn).country
+    );
 
     const convertedValue = (
       parseFloat(formattedCurrencyValueIn) * askValue
