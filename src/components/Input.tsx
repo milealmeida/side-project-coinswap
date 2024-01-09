@@ -1,4 +1,4 @@
-import { InputHTMLAttributes, useState } from 'react';
+import { InputHTMLAttributes, LegacyRef, useState } from 'react';
 import { FaChevronDown } from 'react-icons/fa';
 
 import {
@@ -10,25 +10,27 @@ import {
   Menu,
   MenuButton,
   MenuItem,
-  MenuList
+  MenuList,
+  useColorMode
 } from '@chakra-ui/react';
 
 import { AcceptedCurrencies } from 'types/acceptedCurrencies';
 import { content } from 'utils/content';
-import { useCurrency } from 'contexts/currency';
 
 export type InputComponentProps = {
   currencyCode: AcceptedCurrencies;
+  reference?: LegacyRef<HTMLInputElement>;
   onChangeCurrency: (code: string) => void;
 } & InputHTMLAttributes<HTMLInputElement>;
 
 const InputComponent = ({
   currencyCode,
+  reference,
   onChangeCurrency,
   ...rest
 }: InputComponentProps) => {
+  const { colorMode } = useColorMode();
   const [outline, setOutline] = useState(false);
-  const { isLoading } = useCurrency();
 
   const renderCountryCurrency = (currencyKey: AcceptedCurrencies) => {
     const country = content.map((item) => (
@@ -50,12 +52,13 @@ const InputComponent = ({
       eur: country[1],
       gbp: country[2],
       chf: country[3],
-      jpy: country[4],
-      brl: country[5]
+      brl: country[4]
     };
 
     return countries[currencyKey] ?? countries.usd;
   };
+
+  const { onFocus, onBlur } = rest;
 
   return (
     <Flex
@@ -70,6 +73,7 @@ const InputComponent = ({
       }}
     >
       <Input
+        ref={reference}
         p={{ base: '2.2rem', md: '2.6rem 1.6rem' }}
         maxW="16.2rem"
         w="100%"
@@ -82,16 +86,23 @@ const InputComponent = ({
         {...rest}
         type="text"
         size="lg"
-        onFocus={() => setOutline(true)}
-        onBlur={() => setOutline(false)}
-        isDisabled={isLoading}
+        _disabled={{
+          color: colorMode === 'light' ? '#0F172A' : '#fff'
+        }}
+        onBlur={(event) => {
+          setOutline(false);
+          onBlur && onBlur(event);
+        }}
+        onFocus={(event) => {
+          setOutline(true);
+          onFocus && onFocus(event);
+        }}
       />
 
       <Flex bgColor="middleGray" width="0.1rem" height="2.4rem" />
 
       <Menu>
         <MenuButton
-          isDisabled={isLoading}
           p={{ base: '2.2rem 1.2rem', md: '2.6rem 1.6rem' }}
           maxW="13rem"
           w="100%"

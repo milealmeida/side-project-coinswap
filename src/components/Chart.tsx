@@ -1,43 +1,47 @@
 import {
-  BarChart,
   Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
+  BarChart,
   Legend,
-  ResponsiveContainer
+  ResponsiveContainer,
+  XAxis,
+  YAxis
 } from 'recharts';
 
-import { useMediaQuery } from '@chakra-ui/react';
+import { Box } from '@chakra-ui/react';
 
 export type ChartProps = {
-  data: [];
+  data: {
+    [key: string]: string | number;
+  }[];
 };
 
 const Chart = ({ data }: ChartProps) => {
-  const [responsive] = useMediaQuery('(min-width: 900px)');
+  const dataKeys = Object.keys(data[0]);
 
   return (
-    <ResponsiveContainer width="100%" height={responsive ? 400 : 250}>
-      <BarChart
-        data={data}
-        margin={{
-          top: 5,
-          right: responsive ? 30 : 40,
-          left: responsive ? 20 : 0,
-          bottom: 5
-        }}
-      >
-        <CartesianGrid strokeDasharray="3 3" />
-        <XAxis dataKey="name" />
-        <YAxis />
-        <Tooltip />
-        <Legend />
-        <Bar dataKey="name" fill="#8884d8" />
-        <Bar dataKey="priceUsd" fill="#82ca9d" />
-      </BarChart>
-    </ResponsiveContainer>
+    <Box w="100%" height={400} maxW="60rem">
+      <ResponsiveContainer width="100%" height="100%">
+        <BarChart
+          width={500}
+          height={300}
+          data={data}
+          margin={{
+            top: 5,
+            right: 30,
+            left: 20,
+            bottom: 5
+          }}
+          barSize={60}
+          barGap={60}
+        >
+          <XAxis dataKey="name" />
+          <YAxis />
+          <Legend />
+          <Bar dataKey={dataKeys[1]} fill="#7C3AED" width={40} />
+          <Bar dataKey={dataKeys[2]} fill="#02A724" width={40} />
+        </BarChart>
+      </ResponsiveContainer>
+    </Box>
   );
 };
 

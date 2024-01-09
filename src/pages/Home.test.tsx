@@ -2,15 +2,9 @@ import { render, screen } from '@testing-library/react';
 import Home from './Home';
 
 import 'jest-fetch-mock';
-import { QueryClientProvider } from 'react-query';
-import { queryClient } from 'services/queryClient.ts';
 
 beforeEach(() => {
-  render(
-    <QueryClientProvider client={queryClient}>
-      <Home />
-    </QueryClientProvider>
-  );
+  render(<Home />);
 });
 
 beforeAll(() => {
