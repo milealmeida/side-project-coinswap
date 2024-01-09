@@ -66,10 +66,13 @@ export const CurrencyProvider = ({ children }: CurrencyProviderProps) => {
     navigator.language.substring(0, 2) === 'en' ? 'eur' : 'usd'
   );
 
-  const teste = maskCurrency(currencyFlagIn, Number(currencyValueIn));
+  const currencyMaskedValue = maskCurrency(
+    currencyFlagIn,
+    Number(currencyValueIn)
+  );
 
   const [currencyValueInFormatted, setCurrencyValueInFormatted] =
-    useState(teste);
+    useState(currencyMaskedValue);
 
   const debouncedValueIn = useDebounce(currencyValueIn, 500);
   const debouncedFlagIn = useDebounce(currencyFlagIn, 500);
@@ -100,7 +103,7 @@ export const CurrencyProvider = ({ children }: CurrencyProviderProps) => {
     }
   };
 
-  const handleTeste = () => {
+  const handleFormatValue = () => {
     setCurrencyValueInFormatted(
       maskCurrency(currencyFlagIn, Number(currencyValueIn))
     );
@@ -111,7 +114,7 @@ export const CurrencyProvider = ({ children }: CurrencyProviderProps) => {
   }, [debouncedValueIn, debouncedFlagIn, debouncedFlagOut]);
 
   useEffect(() => {
-    handleTeste();
+    handleFormatValue();
   }, [currencyValueIn, currencyFlagIn]);
 
   return (

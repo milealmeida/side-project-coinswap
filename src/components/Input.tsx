@@ -1,4 +1,4 @@
-import { InputHTMLAttributes, useState } from 'react';
+import { InputHTMLAttributes, LegacyRef, useState } from 'react';
 import { FaChevronDown } from 'react-icons/fa';
 
 import {
@@ -19,7 +19,7 @@ import { content } from 'utils/content';
 
 export type InputComponentProps = {
   currencyCode: AcceptedCurrencies;
-  reference?: any;
+  reference?: LegacyRef<HTMLInputElement>;
   onChangeCurrency: (code: string) => void;
 } & InputHTMLAttributes<HTMLInputElement>;
 
@@ -52,8 +52,7 @@ const InputComponent = ({
       eur: country[1],
       gbp: country[2],
       chf: country[3],
-      jpy: country[4],
-      brl: country[5]
+      brl: country[4]
     };
 
     return countries[currencyKey] ?? countries.usd;

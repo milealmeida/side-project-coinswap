@@ -41,14 +41,13 @@ export default function Home() {
   const inputCurrencyValueInRef = useRef<HTMLInputElement>(null);
 
   const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
-    const value = event.currentTarget?.value;
+    const value = event.currentTarget?.value?.replace(/[^0-9,\.]/g, '');
     let tempValue = value;
 
-    if (value.length === 2 && value[0] === '0') {
+    if (value.length === 2 && value[0] === '0')
       tempValue = tempValue.substring(1);
-    }
 
-    setCurrencyValueIn(tempValue);
+    setCurrencyValueIn(tempValue.substring(0, 11));
   };
 
   const handleOnFocus = (event: ChangeEvent<HTMLInputElement>) => {
@@ -58,7 +57,7 @@ export default function Home() {
 
   const handleOnBlur = (event: ChangeEvent<HTMLInputElement>) => {
     const value = event.currentTarget?.value;
-    if (value.trim() === '') return setCurrencyValueIn('R$ 0,00');
+    if (value.trim() === '') return setCurrencyValueIn('1');
   };
 
   const handleButtonExchangeClick = () => {
@@ -124,10 +123,6 @@ export default function Home() {
             reference={inputCurrencyValueInRef}
             className="inputCurrencyFlagIn"
             onChange={handleInputChange}
-            onBlur={(e) => {
-              handleOnBlur(e);
-              setIsFocused(false);
-            }}
             onFocus={handleOnFocus}
             value={currencyValueIn}
             onClick={(event) => event.currentTarget.select()}
@@ -135,18 +130,41 @@ export default function Home() {
             onChangeCurrency={(codeIn) => {
               setCurrencyFlagIn(codeIn);
             }}
+            onBlur={(event) => {
+              handleOnBlur(event);
+              setIsFocused(false);
+            }}
           />
 
           {!isFocused && (
             <Flex
+              borderRadius="0.8rem"
               onClick={handleIsFocused}
               bg={colors.bgColor}
-              width="45%"
-              height="3rem"
+              width="50%"
+              height={{ base: '42px', md: '49px' }}
               position="absolute"
-              top={{ base: '1.2rem', md: '1.5rem' }}
-              left={{ base: '1.8rem', md: '1.8rem' }}
+              top="0.2rem"
+              left="0.2rem"
+              paddingLeft="1.6rem"
               fontSize="1.6rem"
+              overflowX="scroll"
+              paddingBottom="2rem"
+              paddingTop={{ base: '0.9rem', md: '1.3rem' }}
+              sx={{
+                '&::-webkit-scrollbar': {
+                  height: '5px'
+                },
+                '&::-webkit-scrollbar-track': {
+                  background: 'transparent',
+                  height: '5px'
+                },
+                '&::-webkit-scrollbar-thumb': {
+                  background: 'transparent',
+                  height: '5px'
+                },
+                scrollbarWidth: '2px'
+              }}
             >
               {currencyValueInFormatted}
             </Flex>
