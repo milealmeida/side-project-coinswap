@@ -13,6 +13,7 @@ export default {
       created: 'Created by',
       and: 'and',
       keyTitle: 'Avatar of'
-    }
+    },
+    coin: 'Coin'
   }
 };

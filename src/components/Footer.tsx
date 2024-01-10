@@ -28,13 +28,15 @@ const Footer = () => {
           {translate('footer.created')}
         </Text>
         <AvatarGroup>
-          {contributors.map(({ fullName, githubUsername }) => (
-            <Avatar
-              key={`${translate('footer.keyTitle')} ${fullName}`}
-              fullName={fullName}
-              githubUsername={githubUsername}
-            />
-          ))}
+          <Flex gap={2}>
+            {contributors.map(({ fullName, githubUsername }) => (
+              <Avatar
+                key={`${translate('footer.keyTitle')} ${fullName}`}
+                fullName={fullName}
+                githubUsername={githubUsername}
+              />
+            ))}
+          </Flex>
         </AvatarGroup>
       </Flex>
     </Center>

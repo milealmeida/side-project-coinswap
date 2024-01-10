@@ -11,7 +11,8 @@ export const light = {
   surfaceSecondary: '#94A3B8',
   graphicElements: '#94A3B8',
   bgColor: '#F8FAFC',
-  iconExchange: '#0F172A'
+  iconExchange: '#0F172A',
+  red: '#fa5252'
 };
 
 export const dark = {
@@ -20,7 +21,8 @@ export const dark = {
   surfaceSecondary: '#334155',
   graphicElements: '#334155',
   bgColor: '#0F172A',
-  iconExchange: '#F8FAFC'
+  iconExchange: '#F8FAFC',
+  red: '#ff6b6b'
 };
 
 const fonts = {
