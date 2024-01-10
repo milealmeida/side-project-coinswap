@@ -42,7 +42,9 @@ export default function Home() {
 
   const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
     const value = event.currentTarget?.value?.replace(/[^0-9,\.]/g, '');
-    let tempValue = value;
+    const replaceCommaToDot = value.replace(/,/g, '.');
+
+    let tempValue = replaceCommaToDot;
 
     if (value.length === 2 && value[0] === '0')
       tempValue = tempValue.substring(1);
@@ -86,7 +88,7 @@ export default function Home() {
 
   const data = [
     {
-      name: 'Moeda',
+      name: translate('coin'),
       [currencyFlagIn]: currencyValueIn,
       [currencyFlagOut]: currencyValueOut
     }
@@ -153,17 +155,17 @@ export default function Home() {
               paddingTop={{ base: '0.9rem', md: '1.3rem' }}
               sx={{
                 '&::-webkit-scrollbar': {
-                  height: '5px'
+                  height: '0.5rem'
                 },
                 '&::-webkit-scrollbar-track': {
                   background: 'transparent',
-                  height: '5px'
+                  height: '0.5rem'
                 },
                 '&::-webkit-scrollbar-thumb': {
                   background: 'transparent',
-                  height: '5px'
+                  height: '0.5rem'
                 },
-                scrollbarWidth: '2px'
+                scrollbarWidth: '0.2rem'
               }}
             >
               {currencyValueInFormatted}
@@ -192,10 +194,10 @@ export default function Home() {
         {isSameFlag && (
           <Text
             position="absolute"
-            top="6rem"
-            right="0"
+            top={{ base: '15rem', md: '6rem' }}
+            right={{ base: '2rem', md: '0' }}
             fontSize="lg"
-            color="red"
+            color={colors.red}
           >
             {translate('errorMessage')}
           </Text>

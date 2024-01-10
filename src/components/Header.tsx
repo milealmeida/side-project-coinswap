@@ -44,7 +44,7 @@ const Header = () => {
       p={{ base: '2rem', md: '4rem' }}
     >
       <Link href="/">
-        <Heading>CoinStrap</Heading>
+        <Heading>CoinSwap</Heading>
       </Link>
 
       <Flex gap="2rem">

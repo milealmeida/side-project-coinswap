@@ -13,6 +13,7 @@ export default {
       created: 'Criado por',
       and: 'y',
       keyTitle: 'Avatar de'
-    }
+    },
+    coin: 'Moneda'
   }
 };

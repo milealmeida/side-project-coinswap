@@ -7,7 +7,7 @@ import {
   YAxis
 } from 'recharts';
 
-import { Box } from '@chakra-ui/react';
+import { Box, useMediaQuery } from '@chakra-ui/react';
 
 export type ChartProps = {
   data: {
@@ -17,9 +17,10 @@ export type ChartProps = {
 
 const Chart = ({ data }: ChartProps) => {
   const dataKeys = Object.keys(data[0]);
+  const [mobile] = useMediaQuery('(min-width: 768px)');
 
   return (
-    <Box w="100%" height={400} maxW="60rem">
+    <Box w="100%" height={mobile ? 400 : 200} maxW="60rem">
       <ResponsiveContainer width="100%" height="100%">
         <BarChart
           width={500}
