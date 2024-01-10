@@ -153,17 +153,17 @@ export default function Home() {
               paddingTop={{ base: '0.9rem', md: '1.3rem' }}
               sx={{
                 '&::-webkit-scrollbar': {
-                  height: '5px'
+                  height: '0.5rem'
                 },
                 '&::-webkit-scrollbar-track': {
                   background: 'transparent',
-                  height: '5px'
+                  height: '0.5rem'
                 },
                 '&::-webkit-scrollbar-thumb': {
                   background: 'transparent',
-                  height: '5px'
+                  height: '0.5rem'
                 },
-                scrollbarWidth: '2px'
+                scrollbarWidth: '0.2rem'
               }}
             >
               {currencyValueInFormatted}
