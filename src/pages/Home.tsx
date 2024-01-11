@@ -18,6 +18,7 @@ import { AcceptedCurrencies } from 'types/acceptedCurrencies';
 
 import { dark, light } from 'styles/global';
 import { maskCurrency } from 'hooks/Masks';
+import { formatValue } from 'utils/stringUtils';
 
 export default function Home() {
   const colors = useColorModeValue(light, dark);
@@ -41,12 +42,12 @@ export default function Home() {
   const inputCurrencyValueInRef = useRef<HTMLInputElement>(null);
 
   const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
-    const value = event.currentTarget?.value?.replace(/[^0-9,\.]/g, '');
-    const replaceCommaToDot = value.replace(/,/g, '.');
+    const inputValue = event.currentTarget?.value;
 
-    let tempValue = replaceCommaToDot;
+    const formattedValue = formatValue(inputValue);
+    let tempValue = formattedValue;
 
-    if (value.length === 2 && value[0] === '0')
+    if (inputValue.length === 2 && inputValue[0] === '0')
       tempValue = tempValue.substring(1);
 
     setCurrencyValueIn(tempValue.substring(0, 11));
@@ -89,8 +90,8 @@ export default function Home() {
   const data = [
     {
       name: translate('coin'),
-      [currencyFlagIn]: currencyValueIn,
-      [currencyFlagOut]: currencyValueOut
+      [currencyFlagIn.toUpperCase()]: currencyValueIn,
+      [currencyFlagOut.toUpperCase()]: currencyValueOut
     }
   ];
 
