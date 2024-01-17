@@ -47,6 +47,10 @@ export default function Home() {
     const formattedValue = formatValue(inputValue);
     let tempValue = formattedValue;
 
+    if (inputValue.length === 0) {
+      tempValue = '0';
+    }
+
     if (inputValue.length === 2 && inputValue[0] === '0')
       tempValue = tempValue.substring(1);
 
