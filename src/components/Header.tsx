@@ -69,6 +69,9 @@ const Header = () => {
                 key={label}
                 justifyContent="center"
                 onClick={() => i18n.changeLanguage(code)}
+                _active={{
+                  bgColor: 'red'
+                }}
               >
                 {renderCountryIcon(code as AcceptedLanguages)}
               </MenuItem>
