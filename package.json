@@ -19,7 +19,7 @@
     "@emotion/react": "^11.11.1",
     "@emotion/styled": "^11.11.0",
     "@uidotdev/usehooks": "^2.3.1",
-    "axios": "^1.4.0",
+    "axios": "^1.19.0",
     "framer-motion": "^10.12.16",
     "i18next": "^23.2.7",
     "lodash.debounce": "^4.0.8",
@@ -64,7 +64,7 @@
     "jest-fetch-mock": "^3.0.3",
     "polyfill": "^0.1.0",
     "typescript": "^5.0.2",
-    "vite": "^4.3.9"
+    "vite": "^4.5.14"
   },
   "license": "MIT",
   "engines": {
