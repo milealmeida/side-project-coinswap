@@ -1,12 +1,7 @@
-import {
-  AvatarGroup,
-  Center,
-  Flex,
-  Text,
-  useColorModeValue
-} from '@chakra-ui/react';
+import { AvatarGroup, Center, Flex, Text } from '@chakra-ui/react';
 import Avatar from './Avatar';
 
+import { useColorModeValue } from 'components/ui/color-mode';
 import { contributors } from 'mocks/contributors';
 import { dark, light } from 'styles/global';
 import { useTranslation } from 'react-i18next';

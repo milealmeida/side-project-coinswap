@@ -11,5 +11,7 @@ module.exports = {
     '!<rootDir>/src/**/*.{d.ts, ts}'
   ],
   moduleDirectories: ['node_modules', 'src'],
-  transformIgnorePatterns: ['/node_modules/(?!(@uidotdev/usehooks)/)']
+  transformIgnorePatterns: [
+    '/node_modules/(?!(@uidotdev/usehooks|@chakra-ui|@ark-ui|@zag-js|next-themes|recharts)/)'
+  ]
 };

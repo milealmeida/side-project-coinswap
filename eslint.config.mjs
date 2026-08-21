@@ -30,7 +30,7 @@ export default defineConfig([
     },
     settings: {
       react: {
-        version: '18.3'
+        version: '19'
       }
     },
     rules: {

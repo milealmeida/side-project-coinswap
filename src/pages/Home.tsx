@@ -2,17 +2,10 @@ import { ChangeEvent, useRef, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { TbArrowsExchange } from 'react-icons/tb';
 
-import {
-  Box,
-  Flex,
-  Heading,
-  useColorModeValue,
-  Icon,
-  Button,
-  Text
-} from '@chakra-ui/react';
+import { Box, Flex, Heading, Icon, Button, Text } from '@chakra-ui/react';
 
 import { Chart, Footer, Header, Input } from 'components';
+import { useColorModeValue } from 'components/ui/color-mode';
 import { useCurrency } from 'contexts/currency';
 import { AcceptedCurrencies } from 'types/acceptedCurrencies';
 
@@ -151,7 +144,7 @@ export default function Home() {
               overflowX="scroll"
               paddingBottom="2rem"
               paddingTop={{ base: '0.9rem', md: '1.3rem' }}
-              sx={{
+              css={{
                 '&::-webkit-scrollbar': {
                   height: '5px'
                 },
@@ -172,12 +165,9 @@ export default function Home() {
         </div>
 
         <Button bg="transparent" onClick={handleButtonExchangeClick}>
-          <Icon
-            as={TbArrowsExchange}
-            width="2.4rem"
-            height="2.4rem"
-            color="iconExchange"
-          />
+          <Icon width="2.4rem" height="2.4rem" color="iconExchange">
+            <TbArrowsExchange />
+          </Icon>
         </Button>
 
         <Input

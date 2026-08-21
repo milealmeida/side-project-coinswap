@@ -1,7 +1,6 @@
-import { ChakraProvider } from '@chakra-ui/react';
 import { render, screen } from '@testing-library/react';
+import { Provider } from 'components/ui/provider';
 import { CurrencyProvider } from 'contexts/currency.tsx';
-import { theme } from 'styles/global';
 
 import 'i18n';
 
@@ -9,22 +8,26 @@ import Home from './Home';
 
 const renderHome = () =>
   render(
-    <ChakraProvider theme={theme}>
+    <Provider>
       <CurrencyProvider>
         <Home />
       </CurrencyProvider>
-    </ChakraProvider>
+    </Provider>
   );
 
 beforeAll(() => {
   Object.defineProperty(window, 'matchMedia', {
-    value: jest.fn(() => {
-      return {
-        matches: true,
-        addListener: jest.fn(),
-        removeListener: jest.fn()
-      };
-    })
+    writable: true,
+    value: jest.fn().mockImplementation((query: string) => ({
+      matches: true,
+      media: query,
+      onchange: null,
+      addListener: jest.fn(),
+      removeListener: jest.fn(),
+      addEventListener: jest.fn(),
+      removeEventListener: jest.fn(),
+      dispatchEvent: jest.fn()
+    }))
   });
 });
 

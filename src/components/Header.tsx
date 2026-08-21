@@ -5,15 +5,13 @@ import {
   Image,
   Link,
   Menu,
-  MenuButton,
-  MenuItem,
-  MenuList,
-  useColorMode
+  Portal
 } from '@chakra-ui/react';
 import { FaMoon, FaSun } from 'react-icons/fa';
 import { useTranslation } from 'react-i18next';
 import i18n from 'i18next';
 
+import { useColorMode } from 'components/ui/color-mode';
 import { AcceptedLanguages } from 'types/acceptedLanguages';
 import { languages } from 'assets/locales/languages';
 import { es, ptBr, usa } from 'assets/img';
@@ -56,25 +54,31 @@ const Header = () => {
           aria-label="toggle theme"
           rounded="full"
           onClick={toggleColorMode}
-          icon={colorMode === 'dark' ? <FaSun /> : <FaMoon />}
-        />
+        >
+          {colorMode === 'dark' ? <FaSun /> : <FaMoon />}
+        </IconButton>
 
-        <Menu isLazy>
-          <MenuButton fontSize="1.6rem">
+        <Menu.Root lazyMount>
+          <Menu.Trigger fontSize="1.6rem">
             {renderCountryIcon(currentLanguage)}
-          </MenuButton>
-          <MenuList minW="initial" width="6rem">
-            {languages.map(({ label, code }) => (
-              <MenuItem
-                key={label}
-                justifyContent="center"
-                onClick={() => i18n.changeLanguage(code)}
-              >
-                {renderCountryIcon(code as AcceptedLanguages)}
-              </MenuItem>
-            ))}
-          </MenuList>
-        </Menu>
+          </Menu.Trigger>
+          <Portal>
+            <Menu.Positioner>
+              <Menu.Content minW="initial" width="6rem">
+                {languages.map(({ label, code }) => (
+                  <Menu.Item
+                    key={label}
+                    value={code}
+                    justifyContent="center"
+                    onClick={() => i18n.changeLanguage(code)}
+                  >
+                    {renderCountryIcon(code as AcceptedLanguages)}
+                  </Menu.Item>
+                ))}
+              </Menu.Content>
+            </Menu.Positioner>
+          </Portal>
+        </Menu.Root>
       </Flex>
     </Flex>
   );

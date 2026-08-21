@@ -37,8 +37,8 @@ const Chart = ({ data }: ChartProps) => {
           <XAxis dataKey="name" />
           <YAxis />
           <Legend />
-          <Bar dataKey={dataKeys[1]} fill="#7C3AED" width={40} />
-          <Bar dataKey={dataKeys[2]} fill="#02A724" width={40} />
+          <Bar dataKey={dataKeys[1]} fill="#7C3AED" />
+          <Bar dataKey={dataKeys[2]} fill="#02A724" />
         </BarChart>
       </ResponsiveContainer>
     </Box>
