@@ -1,11 +1,20 @@
+import { ChakraProvider } from '@chakra-ui/react';
 import { render, screen } from '@testing-library/react';
+import { CurrencyProvider } from 'contexts/currency.tsx';
+import { theme } from 'styles/global';
+
+import 'i18n';
+
 import Home from './Home';
 
-import 'jest-fetch-mock';
-
-beforeEach(() => {
-  render(<Home />);
-});
+const renderHome = () =>
+  render(
+    <ChakraProvider theme={theme}>
+      <CurrencyProvider>
+        <Home />
+      </CurrencyProvider>
+    </ChakraProvider>
+  );
 
 beforeAll(() => {
   Object.defineProperty(window, 'matchMedia', {
@@ -17,6 +26,10 @@ beforeAll(() => {
       };
     })
   });
+});
+
+beforeEach(() => {
+  renderHome();
 });
 
 describe('<Home />', () => {
