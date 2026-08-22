@@ -2,7 +2,6 @@ export default {
   translation: {
     title: 'Aplicativo de conversão de moeda',
     subtitle: 'Taxa de Câmbio',
-    select: 'Selecione',
     flags: {
       brazil: 'Bandeira do Brasil',
       spain: 'Bandeira da Espanha',
@@ -19,7 +18,6 @@ export default {
     allCurrencies: 'Todas as moedas',
     footer: {
       created: 'Criado por',
-      and: 'e',
       keyTitle: 'Avatar de'
     }
   }

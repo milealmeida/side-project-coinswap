@@ -2,7 +2,6 @@ export default {
   translation: {
     title: 'Currency conversion app',
     subtitle: 'Exchange Rate',
-    select: 'Select',
     flags: {
       brazil: 'Flag of Brazil',
       spain: 'Flag of Spain',
@@ -19,7 +18,6 @@ export default {
     allCurrencies: 'All currencies',
     footer: {
       created: 'Created by',
-      and: 'and',
       keyTitle: 'Avatar of'
     }
   }
