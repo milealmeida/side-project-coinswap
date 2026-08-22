@@ -11,9 +11,8 @@ import {
   Portal
 } from '@chakra-ui/react';
 
-import { useColorMode } from 'components/ui/color-mode';
 import { AcceptedCurrencies } from 'types/acceptedCurrencies';
-import { content } from 'utils/content';
+import { CURRENCIES, currencyList } from 'utils/currencies';
 
 export type InputComponentProps = {
   currencyCode: AcceptedCurrencies;
@@ -27,12 +26,13 @@ const InputComponent = ({
   onChangeCurrency,
   ...rest
 }: InputComponentProps) => {
-  const { colorMode } = useColorMode();
   const [outline, setOutline] = useState(false);
 
   const renderCountryCurrency = (currencyKey: AcceptedCurrencies) => {
-    const country = content.map((item) => (
-      <Flex gap="0.8rem" alignItems="center" key={item.id}>
+    const item = CURRENCIES[currencyKey] ?? CURRENCIES.usd;
+
+    return (
+      <Flex gap="0.8rem" alignItems="center">
         <Image boxSize="2.4rem" src={item.src} alt={item.alt} />
         <Heading
           color="textPrimary"
@@ -43,17 +43,7 @@ const InputComponent = ({
           {item.text}
         </Heading>
       </Flex>
-    ));
-
-    const countries = {
-      usd: country[0],
-      eur: country[1],
-      gbp: country[2],
-      chf: country[3],
-      brl: country[4]
-    };
-
-    return countries[currencyKey] ?? countries.usd;
+    );
   };
 
   const { onFocus, onBlur } = rest;
@@ -61,13 +51,13 @@ const InputComponent = ({
   return (
     <Flex
       borderRadius="0.8rem"
-      border={`1.5px solid ${outline ? '#7C3AED' : '#94A3B8'}`}
+      borderWidth="1.5px"
+      borderStyle="solid"
+      borderColor={outline ? 'accent' : 'middleGray'}
       overflow="hidden"
       alignItems="center"
-      css={{
-        '&:hover': {
-          borderColor: '#7C3AED'
-        }
+      _hover={{
+        borderColor: 'accent'
       }}
     >
       <Input
@@ -85,7 +75,7 @@ const InputComponent = ({
         type="text"
         size="lg"
         _disabled={{
-          color: colorMode === 'light' ? '#0F172A' : '#fff'
+          color: 'textPrimary'
         }}
         onBlur={(event) => {
           setOutline(false);
@@ -106,14 +96,11 @@ const InputComponent = ({
             maxW="13rem"
             w="100%"
             bg="transparent"
+            _hover={{ bg: 'surfaceSecondary' }}
+            _focus={{ bg: 'surfaceSecondary' }}
+            _active={{ bg: 'middleGray' }}
             css={{
-              borderRadius: '0',
-              '&:hover, &:focus': {
-                backgroundColor: '#828fa0'
-              },
-              '&:active, &[data-active]': {
-                backgroundColor: '#94A3B8'
-              }
+              borderRadius: '0'
             }}
           >
             <Flex
@@ -137,23 +124,19 @@ const InputComponent = ({
               maxH="17.5rem"
               overflow="scroll"
               borderRadius="0.8rem"
-              boxShadow="0 0.4rem 1.6rem 0 rgba(15, 23, 42, 0.15)"
               onFocus={() => setOutline(true)}
               onBlur={() => setOutline(false)}
             >
-              {content.map(({ id, code }) => (
+              {currencyList.map(({ code }) => (
                 <Menu.Item
-                  key={id}
+                  key={code}
                   value={code}
                   p="1.2rem 1.6rem"
                   onClick={() => onChangeCurrency(code.toUpperCase())}
-                  css={{
-                    '&:hover, &:focus': {
-                      backgroundColor: '#94A3B8'
-                    }
-                  }}
+                  _hover={{ bg: 'middleGray' }}
+                  _focus={{ bg: 'middleGray' }}
                 >
-                  {renderCountryCurrency(code as AcceptedCurrencies)}
+                  {renderCountryCurrency(code)}
                 </Menu.Item>
               ))}
             </Menu.Content>

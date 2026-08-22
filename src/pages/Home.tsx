@@ -4,7 +4,7 @@ import { TbArrowsExchange } from 'react-icons/tb';
 
 import { Box, Flex, Heading, Icon, Button, Text } from '@chakra-ui/react';
 
-import { Chart, Footer, Header, Input } from 'components';
+import { Chart, CurrencyBoard, Footer, Header, Input } from 'components';
 import { useColorModeValue } from 'components/ui/color-mode';
 import { useCurrency } from 'contexts/currency';
 import { AcceptedCurrencies } from 'types/acceptedCurrencies';
@@ -24,6 +24,7 @@ export default function Home() {
     currencyFlagOut,
     isLoading,
     hasError,
+    quoteRates,
     setCurrencyFlagIn,
     setCurrencyFlagOut,
     setCurrencyValueIn,
@@ -174,6 +175,12 @@ export default function Home() {
       </Heading>
 
       <Chart data={data} />
+
+      <CurrencyBoard
+        amountValue={currencyValueIn}
+        fromFlag={currencyFlagIn}
+        quoteRates={quoteRates}
+      />
 
       <Footer />
     </Box>

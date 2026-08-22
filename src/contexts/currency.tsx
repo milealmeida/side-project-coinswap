@@ -8,7 +8,8 @@ import {
   type ReactNode
 } from 'react';
 
-import { getCurrencyValue } from 'services/queries';
+import { getLastQuotes } from 'services/queries';
+import { currencyList } from 'utils/currencies';
 import { getNavigatorLanguage, getUserDefaultCurrency } from 'utils/userUtils';
 
 export type CurrencyContextData = {
@@ -21,6 +22,7 @@ export type CurrencyContextData = {
 
   isLoading: boolean;
   hasError: boolean;
+  quoteRates: Record<string, number>;
 
   setCurrencyValueIn: (value: string) => void;
   setCurrencyValueOut: (value: string) => void;
@@ -39,6 +41,7 @@ export const CurrencyContextDefaultValues: CurrencyContextData = {
 
   isLoading: false,
   hasError: false,
+  quoteRates: {},
 
   setCurrencyValueIn: () => null,
   setCurrencyValueOut: () => null,
@@ -52,12 +55,6 @@ export const CurrencyContext = createContext<CurrencyContextData>(
 
 export type CurrencyProviderProps = {
   children: ReactNode;
-};
-
-type HandleOnSuccessData = {
-  [key: string]: {
-    ask: number | string;
-  };
 };
 
 const toAmount = (flag: string, value: string) => parseAmount(flag, value);
@@ -76,6 +73,7 @@ export const CurrencyProvider = ({ children }: CurrencyProviderProps) => {
 
   const [isLoading, setIsLoading] = useState(false);
   const [hasError, setHasError] = useState(false);
+  const [quoteRates, setQuoteRates] = useState<Record<string, number>>({});
 
   const currencyMaskedValue = maskCurrency(
     currencyFlagIn,
@@ -102,37 +100,41 @@ export const CurrencyProvider = ({ children }: CurrencyProviderProps) => {
     setCurrencyValueOut((amount * ask).toFixed(2));
   };
 
-  const handleOnSuccess = (data: HandleOnSuccessData) => {
-    const formattedKey = `${currencyFlagIn}${currencyFlagOut}`.toUpperCase();
-    const quote = data[formattedKey] ?? Object.values(data)[0];
-
-    applyConvertedValue(quote?.ask);
-  };
-
   const handleGetCurrencyValue = async () => {
-    const isSamePair =
-      debouncedFlagIn.toLowerCase() === debouncedFlagOut.toLowerCase();
+    const from = debouncedFlagIn.toLowerCase();
+    const to = debouncedFlagOut.toLowerCase();
+    const isSamePair = from === to;
+    const amount = toAmount(from, debouncedValueIn);
 
-    if (isSamePair) {
-      const amount = toAmount(debouncedFlagIn, debouncedValueIn);
-      setCurrencyValueOut(Number.isFinite(amount) ? amount.toFixed(2) : '');
-      setHasError(false);
-      setIsLoading(false);
-      return;
-    }
+    if (!debouncedValueIn.trim() || !Number.isFinite(amount)) return;
 
-    if (!debouncedValueIn.trim()) return;
+    const targets = currencyList
+      .map((item) => item.code)
+      .filter((code) => code !== from);
 
     setIsLoading(true);
     setHasError(false);
 
     try {
-      const { data } = await getCurrencyValue({
-        coin: currencyFlagIn.toLowerCase(),
-        coinin: currencyFlagOut.toLowerCase()
+      const { data } = await getLastQuotes(from, targets);
+      const rates: Record<string, number> = { [from]: 1 };
+
+      targets.forEach((target) => {
+        const key = `${from}${target}`.toUpperCase();
+        const quote = data[key];
+        const ask = Number(quote?.ask);
+        if (Number.isFinite(ask)) rates[target] = ask;
       });
 
-      handleOnSuccess(data);
+      setQuoteRates(rates);
+
+      if (isSamePair) {
+        setCurrencyValueOut(amount.toFixed(2));
+        setHasError(false);
+        return;
+      }
+
+      applyConvertedValue(rates[to]);
     } catch {
       setHasError(true);
     } finally {
@@ -165,6 +167,7 @@ export const CurrencyProvider = ({ children }: CurrencyProviderProps) => {
         currencyFlagOut,
         isLoading,
         hasError,
+        quoteRates,
         setCurrencyValueIn,
         setCurrencyValueOut,
         setCurrencyFlagIn,

@@ -30,7 +30,8 @@ export const system = createSystem(
       tokens: {
         colors: {
           primary: { value: '#02A724' },
-          middleGray: { value: '#94A3B8' }
+          middleGray: { value: '#94A3B8' },
+          accent: { value: '#7C3AED' }
         },
         fonts: {
           body: { value: `'Inter', sans-serif` },

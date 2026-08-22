@@ -16,6 +16,7 @@ export default {
     chart: {
       currency: 'Moeda'
     },
+    allCurrencies: 'Todas as moedas',
     footer: {
       created: 'Criado por',
       and: 'e',

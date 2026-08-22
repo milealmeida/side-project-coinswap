@@ -1,5 +1,5 @@
 import { AcceptedCurrencies } from 'types/acceptedCurrencies';
-import { getCurrencyFormatted } from 'utils/getCurrencyFormatted';
+import { getCurrencyFormatted } from 'utils/currencies';
 
 const maskCurrency = (currencyFlag: string, currencyValue: number) => {
   const { country, currency } = getCurrencyFormatted(
