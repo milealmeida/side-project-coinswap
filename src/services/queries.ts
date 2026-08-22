@@ -1,8 +1,13 @@
+import { AcceptedCurrencies } from 'types/acceptedCurrencies';
+import { AwesomeQuoteMap } from 'types/awesomeQuote';
+
 import axios from './axios';
 
-type QuoteMap = Record<string, { ask?: number | string }>;
-
-export const getLastQuotes = (from: string, targets: string[]) => {
+export const getLastQuotes = (
+  from: AcceptedCurrencies,
+  targets: AcceptedCurrencies[],
+  config?: { signal?: AbortSignal }
+) => {
   const pairs = targets.map((to) => `${from}-${to}`).join(',');
-  return axios.get<QuoteMap>(`/last/${pairs}`);
+  return axios.get<AwesomeQuoteMap>(`/last/${pairs}`, config);
 };

@@ -1,3 +1,4 @@
+import { type AcceptedCurrencies } from 'types/acceptedCurrencies';
 import { type AcceptedLanguages } from 'types/acceptedLanguages';
 
 export const getNavigatorLanguage = (): AcceptedLanguages => {
@@ -23,8 +24,8 @@ export const applyDocumentLanguage = (language: string) => {
   document.documentElement.lang = toHtmlLang(language);
 };
 
-export const getUserDefaultCurrency = () => {
-  const data = {
+export const getUserDefaultCurrency = (): AcceptedCurrencies => {
+  const data: Record<AcceptedLanguages, AcceptedCurrencies> = {
     ptBr: 'brl',
     es: 'eur',
     en: 'usd'

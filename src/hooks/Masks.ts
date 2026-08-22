@@ -1,10 +1,11 @@
 import { AcceptedCurrencies } from 'types/acceptedCurrencies';
 import { getCurrencyFormatted } from 'utils/currencies';
 
-const maskCurrency = (currencyFlag: string, currencyValue: number) => {
-  const { country, currency } = getCurrencyFormatted(
-    currencyFlag.toLowerCase() as AcceptedCurrencies
-  );
+const maskCurrency = (
+  currencyFlag: AcceptedCurrencies,
+  currencyValue: number
+) => {
+  const { country, currency } = getCurrencyFormatted(currencyFlag);
 
   const currencyFormatted = new Intl.NumberFormat(country, {
     style: 'currency',
@@ -28,7 +29,10 @@ const parseLooseAmount = (value: string): number => {
   return parseFloat(normalized);
 };
 
-const parseAmount = (currencyFlag: string, value: string): number => {
+const parseAmount = (
+  currencyFlag: AcceptedCurrencies,
+  value: string
+): number => {
   const trimmed = value.trim();
   if (!trimmed) return NaN;
 
@@ -36,9 +40,7 @@ const parseAmount = (currencyFlag: string, value: string): number => {
     return parseLooseAmount(trimmed);
   }
 
-  const locale = getCurrencyFormatted(
-    currencyFlag.toLowerCase() as AcceptedCurrencies
-  );
+  const locale = getCurrencyFormatted(currencyFlag);
 
   if (!locale) return parseLooseAmount(trimmed);
 

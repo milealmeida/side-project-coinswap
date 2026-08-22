@@ -70,6 +70,6 @@ export const currencyList: CurrencyMeta[] = [
   CURRENCIES.brl
 ];
 
-export const getCurrencyFormatted = (currency: string) => {
-  return CURRENCIES[currency.toLowerCase() as AcceptedCurrencies];
+export const getCurrencyFormatted = (currency: AcceptedCurrencies) => {
+  return CURRENCIES[currency] ?? CURRENCIES.usd;
 };

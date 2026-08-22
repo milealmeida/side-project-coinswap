@@ -17,7 +17,7 @@ import { CURRENCIES, currencyList } from 'utils/currencies';
 export type InputComponentProps = {
   currencyCode: AcceptedCurrencies;
   reference?: LegacyRef<HTMLInputElement>;
-  onChangeCurrency: (code: string) => void;
+  onChangeCurrency: (code: AcceptedCurrencies) => void;
 } & Omit<InputHTMLAttributes<HTMLInputElement>, 'size' | 'color'>;
 
 const InputComponent = ({
@@ -132,7 +132,7 @@ const InputComponent = ({
                   key={code}
                   value={code}
                   p="1.2rem 1.6rem"
-                  onClick={() => onChangeCurrency(code.toUpperCase())}
+                  onClick={() => onChangeCurrency(code)}
                   _hover={{ bg: 'middleGray' }}
                   _focus={{ bg: 'middleGray' }}
                 >

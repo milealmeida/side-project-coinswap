@@ -7,7 +7,7 @@ import { Box, Flex, Heading, Icon, Button, Text } from '@chakra-ui/react';
 import { Chart, CurrencyBoard, Footer, Header, Input } from 'components';
 import { useColorModeValue } from 'components/ui/color-mode';
 import { useCurrency } from 'contexts/currency';
-import { AcceptedCurrencies } from 'types/acceptedCurrencies';
+import { CURRENCIES } from 'utils/currencies';
 
 import { dark, light } from 'styles/global';
 import { maskCurrency, parseAmount } from 'hooks/Masks';
@@ -18,7 +18,6 @@ export default function Home() {
 
   const {
     currencyValueIn,
-    currencyValueInFormatted,
     currencyValueOut,
     currencyFlagIn,
     currencyFlagOut,
@@ -33,8 +32,7 @@ export default function Home() {
 
   const [isFocused, setIsFocused] = useState(false);
 
-  const isSameFlag =
-    currencyFlagIn.toLowerCase() === currencyFlagOut.toLowerCase();
+  const isSameFlag = currencyFlagIn === currencyFlagOut;
 
   const amountIn = parseAmount(currencyFlagIn, currencyValueIn);
   const amountOut = parseAmount(currencyFlagOut, currencyValueOut);
@@ -70,11 +68,19 @@ export default function Home() {
     setCurrencyFlagOut(tempCurrencyFlagIn);
   };
 
+  const currencyValueInFormatted = Number.isFinite(amountIn)
+    ? maskCurrency(currencyFlagIn, amountIn)
+    : '';
+
   const data = [
     {
       name: translate('chart.currency'),
-      [currencyFlagIn]: Number.isFinite(amountIn) ? amountIn : 0,
-      [currencyFlagOut]: Number.isFinite(amountOut) ? amountOut : 0
+      [CURRENCIES[currencyFlagIn].text]: Number.isFinite(amountIn)
+        ? amountIn
+        : 0,
+      [CURRENCIES[currencyFlagOut].text]: Number.isFinite(amountOut)
+        ? amountOut
+        : 0
     }
   ];
 
@@ -114,10 +120,8 @@ export default function Home() {
             onFocus={handleOnFocus}
             value={isFocused ? currencyValueIn : currencyValueInFormatted}
             onClick={(event) => event.currentTarget.select()}
-            currencyCode={currencyFlagIn.toLowerCase() as AcceptedCurrencies}
-            onChangeCurrency={(codeIn) => {
-              setCurrencyFlagIn(codeIn);
-            }}
+            currencyCode={currencyFlagIn}
+            onChangeCurrency={setCurrencyFlagIn}
             onBlur={handleOnBlur}
           />
 
@@ -133,15 +137,13 @@ export default function Home() {
 
           <Input
             disabled
-            currencyCode={currencyFlagOut.toLowerCase() as AcceptedCurrencies}
+            currencyCode={currencyFlagOut}
             value={
               Number.isFinite(amountOut)
                 ? maskCurrency(currencyFlagOut, amountOut)
                 : ''
             }
-            onChangeCurrency={(codeOut) => {
-              setCurrencyFlagOut(codeOut);
-            }}
+            onChangeCurrency={setCurrencyFlagOut}
           />
         </Flex>
 
