@@ -4,7 +4,7 @@ import { initReactI18next } from 'react-i18next';
 import ptBr from 'assets/locales/ptBr';
 import en from 'assets/locales/en';
 import es from 'assets/locales/es';
-import { getNavigatorLanguage } from 'utils/userUtils';
+import { applyDocumentLanguage, getNavigatorLanguage } from 'utils/userUtils';
 
 i18n.use(initReactI18next).init({
   fallbackLng: 'en',
@@ -14,3 +14,6 @@ i18n.use(initReactI18next).init({
   },
   resources: { ptBr, en, es }
 });
+
+applyDocumentLanguage(i18n.language);
+i18n.on('languageChanged', applyDocumentLanguage);

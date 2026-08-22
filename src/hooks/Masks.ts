@@ -14,6 +14,43 @@ const maskCurrency = (currencyFlag: string, currencyValue: number) => {
   return currencyFormatted;
 };
 
+const parseLooseAmount = (value: string): number => {
+  const cleaned = value.replace(/[^\d,.-]/g, '');
+  if (!cleaned) return NaN;
+
+  const lastComma = cleaned.lastIndexOf(',');
+  const lastDot = cleaned.lastIndexOf('.');
+  const normalized =
+    lastComma > lastDot
+      ? cleaned.replace(/\./g, '').replace(',', '.')
+      : cleaned.replace(/,/g, '');
+
+  return parseFloat(normalized);
+};
+
+const parseAmount = (currencyFlag: string, value: string): number => {
+  const trimmed = value.trim();
+  if (!trimmed) return NaN;
+
+  if (/^[\d.,-]+$/.test(trimmed)) {
+    return parseLooseAmount(trimmed);
+  }
+
+  const locale = getCurrencyFormatted(
+    currencyFlag.toLowerCase() as AcceptedCurrencies
+  );
+
+  if (!locale) return parseLooseAmount(trimmed);
+
+  const parsed = removeCurrencyMask({
+    country: locale.country,
+    currency: locale.currency,
+    money: trimmed
+  });
+
+  return Number.isFinite(parsed) ? parsed : parseLooseAmount(trimmed);
+};
+
 function removeCurrencyMask({
   country,
   currency,
@@ -53,4 +90,4 @@ function removeCurrencyMask({
   return parseFloat(stringNumber);
 }
 
-export { maskCurrency, removeCurrencyMask };
+export { maskCurrency, parseAmount, removeCurrencyMask };

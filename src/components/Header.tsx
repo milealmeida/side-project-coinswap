@@ -29,7 +29,7 @@ const Header = () => {
       en: <Image w="3rem" src={usa} alt={translate('flags.usa')} />
     };
 
-    return data[iconKey];
+    return data[iconKey] ?? data.en;
   };
 
   return (
@@ -42,7 +42,7 @@ const Header = () => {
       p={{ base: '2rem', md: '4rem' }}
     >
       <Link href="/">
-        <Heading>CoinStrap</Heading>
+        <Heading>CoinSwap</Heading>
       </Link>
 
       <Flex gap="2rem">
@@ -59,7 +59,10 @@ const Header = () => {
         </IconButton>
 
         <Menu.Root lazyMount>
-          <Menu.Trigger fontSize="1.6rem">
+          <Menu.Trigger
+            fontSize="1.6rem"
+            aria-label={translate('languageMenu')}
+          >
             {renderCountryIcon(currentLanguage)}
           </Menu.Trigger>
           <Portal>

@@ -9,8 +9,15 @@ export default {
       usa: 'Bandera de los Estados Unidos'
     },
     errorMessage: 'Las entradas no pueden ser las mismas.',
+    requestError: 'No se pudo obtener el tipo de cambio',
+    loading: 'Cargando tipo de cambio...',
+    swapCurrencies: 'Intercambiar monedas',
+    languageMenu: 'Seleccionar idioma',
+    chart: {
+      currency: 'Moneda'
+    },
     footer: {
-      created: 'Criado por',
+      created: 'Creado por',
       and: 'y',
       keyTitle: 'Avatar de'
     }

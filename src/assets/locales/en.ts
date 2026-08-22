@@ -9,6 +9,13 @@ export default {
       usa: 'Flag of USA'
     },
     errorMessage: 'The inputs cannot be the same',
+    requestError: 'Could not fetch the exchange rate',
+    loading: 'Loading exchange rate...',
+    swapCurrencies: 'Swap currencies',
+    languageMenu: 'Select language',
+    chart: {
+      currency: 'Currency'
+    },
     footer: {
       created: 'Created by',
       and: 'and',

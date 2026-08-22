@@ -1,5 +1,5 @@
 import { useDebounce } from '@uidotdev/usehooks';
-import { maskCurrency } from 'hooks/Masks';
+import { maskCurrency, parseAmount } from 'hooks/Masks';
 import {
   createContext,
   useContext,
@@ -9,7 +9,7 @@ import {
 } from 'react';
 
 import { getCurrencyValue } from 'services/queries';
-import { getUserDefaultCurrency } from 'utils/userUtils';
+import { getNavigatorLanguage, getUserDefaultCurrency } from 'utils/userUtils';
 
 export type CurrencyContextData = {
   currencyValueIn: string;
@@ -18,6 +18,9 @@ export type CurrencyContextData = {
 
   currencyFlagIn: string;
   currencyFlagOut: string;
+
+  isLoading: boolean;
+  hasError: boolean;
 
   setCurrencyValueIn: (value: string) => void;
   setCurrencyValueOut: (value: string) => void;
@@ -33,6 +36,9 @@ export const CurrencyContextDefaultValues: CurrencyContextData = {
 
   currencyFlagIn: '',
   currencyFlagOut: '',
+
+  isLoading: false,
+  hasError: false,
 
   setCurrencyValueIn: () => null,
   setCurrencyValueOut: () => null,
@@ -50,9 +56,11 @@ export type CurrencyProviderProps = {
 
 type HandleOnSuccessData = {
   [key: string]: {
-    ask: number;
+    ask: number | string;
   };
 };
+
+const toAmount = (flag: string, value: string) => parseAmount(flag, value);
 
 export const CurrencyProvider = ({ children }: CurrencyProviderProps) => {
   const [currencyValueIn, setCurrencyValueIn] = useState('1');
@@ -63,12 +71,15 @@ export const CurrencyProvider = ({ children }: CurrencyProviderProps) => {
     getUserDefaultCurrency()
   );
   const [currencyFlagOut, setCurrencyFlagOut] = useState(
-    navigator.language.substring(0, 2) === 'en' ? 'eur' : 'usd'
+    getNavigatorLanguage() === 'en' ? 'eur' : 'usd'
   );
+
+  const [isLoading, setIsLoading] = useState(false);
+  const [hasError, setHasError] = useState(false);
 
   const currencyMaskedValue = maskCurrency(
     currencyFlagIn,
-    Number(currencyValueIn)
+    toAmount(currencyFlagIn, currencyValueIn) || 0
   );
 
   const [currencyValueInFormatted, setCurrencyValueInFormatted] =
@@ -78,34 +89,61 @@ export const CurrencyProvider = ({ children }: CurrencyProviderProps) => {
   const debouncedFlagIn = useDebounce(currencyFlagIn, 500);
   const debouncedFlagOut = useDebounce(currencyFlagOut, 500);
 
+  const applyConvertedValue = (askValue: number | string | undefined) => {
+    const amount = toAmount(currencyFlagIn, currencyValueIn);
+    const ask = Number(askValue);
+
+    if (!Number.isFinite(amount) || !Number.isFinite(ask)) {
+      setHasError(true);
+      return;
+    }
+
+    setHasError(false);
+    setCurrencyValueOut((amount * ask).toFixed(2));
+  };
+
   const handleOnSuccess = (data: HandleOnSuccessData) => {
     const formattedKey = `${currencyFlagIn}${currencyFlagOut}`.toUpperCase();
-    const askValue = data[formattedKey]?.ask;
+    const quote = data[formattedKey] ?? Object.values(data)[0];
 
-    const convertedValue = (parseFloat(currencyValueIn) * askValue).toFixed(2);
-    setCurrencyValueOut(convertedValue);
+    applyConvertedValue(quote?.ask);
   };
 
   const handleGetCurrencyValue = async () => {
-    const hasValidValue =
-      debouncedValueIn || debouncedFlagIn || debouncedFlagOut;
-    if (hasValidValue) {
-      try {
-        const { data } = await getCurrencyValue({
-          coin: currencyFlagIn.toLowerCase(),
-          coinin: currencyFlagOut.toLowerCase()
-        });
+    const isSamePair =
+      debouncedFlagIn.toLowerCase() === debouncedFlagOut.toLowerCase();
 
-        handleOnSuccess(data);
-      } catch (error) {
-        console.error(`Ops... Something went wrong!`, error);
-      }
+    if (isSamePair) {
+      const amount = toAmount(debouncedFlagIn, debouncedValueIn);
+      setCurrencyValueOut(Number.isFinite(amount) ? amount.toFixed(2) : '');
+      setHasError(false);
+      setIsLoading(false);
+      return;
+    }
+
+    if (!debouncedValueIn.trim()) return;
+
+    setIsLoading(true);
+    setHasError(false);
+
+    try {
+      const { data } = await getCurrencyValue({
+        coin: currencyFlagIn.toLowerCase(),
+        coinin: currencyFlagOut.toLowerCase()
+      });
+
+      handleOnSuccess(data);
+    } catch {
+      setHasError(true);
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const handleFormatValue = () => {
+    const amount = toAmount(currencyFlagIn, currencyValueIn);
     setCurrencyValueInFormatted(
-      maskCurrency(currencyFlagIn, Number(currencyValueIn))
+      Number.isFinite(amount) ? maskCurrency(currencyFlagIn, amount) : ''
     );
   };
 
@@ -125,6 +163,8 @@ export const CurrencyProvider = ({ children }: CurrencyProviderProps) => {
         currencyValueOut,
         currencyFlagIn,
         currencyFlagOut,
+        isLoading,
+        hasError,
         setCurrencyValueIn,
         setCurrencyValueOut,
         setCurrencyFlagIn,
