@@ -24,7 +24,15 @@ export default {
     },
     chart: {
       currency: 'Moneda',
-      summary: '{{fromAmount}} ({{from}}) equivalen a {{toAmount}} ({{to}})'
+      summary: '{{fromAmount}} ({{from}}) equivalen a {{toAmount}} ({{to}})',
+      history: '{{from}} a {{to}} en {{days}} días',
+      date: 'Fecha',
+      rate: 'Cotización',
+      days7: '7 días',
+      days30: '30 días',
+      loading: 'Cargando historial...',
+      empty: 'Sin historial para este par',
+      samePair: 'Elige dos monedas distintas para ver el historial'
     },
     allCurrencies: 'Todas las monedas',
     footer: {

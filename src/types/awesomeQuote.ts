@@ -3,6 +3,7 @@ export type AwesomeQuote = {
   bid?: string;
   pctChange?: string;
   create_date?: string;
+  timestamp?: string;
 };
 
 export type AwesomeQuoteMap = Record<string, AwesomeQuote>;

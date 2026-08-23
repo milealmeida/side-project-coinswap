@@ -7,15 +7,17 @@ import { Box, Button, Flex, Heading, Icon, Text } from '@chakra-ui/react';
 import { Chart, CurrencyBoard, Footer, Header, Input } from 'components';
 import { useColorModeValue } from 'components/ui/color-mode';
 import { useCurrency } from 'contexts/currency';
+import { maskCurrency, parseAmount } from 'hooks/Masks';
+import { useQuoteHistory, type HistoryRange } from 'hooks/useQuoteHistory';
 import { copyText } from 'utils/clipboard';
 import { CURRENCIES } from 'utils/currencies';
+import { toHtmlLang } from 'utils/userUtils';
 
-import { maskCurrency, parseAmount } from 'hooks/Masks';
 import { dark, light } from 'styles/global';
 
 export default function Home() {
   const colors = useColorModeValue(light, dark);
-  const { t: translate } = useTranslation();
+  const { t: translate, i18n } = useTranslation();
 
   const {
     currencyValueIn,
@@ -33,6 +35,7 @@ export default function Home() {
 
   const [isFocused, setIsFocused] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [historyDays, setHistoryDays] = useState<HistoryRange>(7);
   const copiedTimer = useRef<ReturnType<typeof setTimeout> | undefined>(
     undefined
   );
@@ -88,13 +91,16 @@ export default function Home() {
   const fromCode = CURRENCIES[currencyFlagIn].text;
   const toCode = CURRENCIES[currencyFlagOut].text;
 
-  const data = [
-    {
-      name: translate('chart.currency'),
-      [fromCode]: Number.isFinite(amountIn) ? amountIn : 0,
-      [toCode]: Number.isFinite(amountOut) ? amountOut : 0
-    }
-  ];
+  const {
+    points: historyPoints,
+    isLoading: historyLoading,
+    hasError: historyError
+  } = useQuoteHistory(
+    currencyFlagIn,
+    currencyFlagOut,
+    historyDays,
+    toHtmlLang(i18n.language)
+  );
 
   const statusMessage = isSameFlag
     ? translate('errorMessage')
@@ -254,18 +260,63 @@ export default function Home() {
           </Text>
         </Flex>
 
-        <Heading
-          as="h2"
+        <Flex
           w="100%"
           maxW="61rem"
-          color="textPrimary"
-          data-testid="subtitle"
-          textAlign={{ base: 'center', md: 'left' }}
+          alignItems={{ base: 'center', md: 'center' }}
+          justifyContent={{ base: 'center', md: 'space-between' }}
+          flexDir={{ base: 'column', md: 'row' }}
+          gap="1.2rem"
+          paddingInline={{ base: '2rem', md: 0 }}
         >
-          {translate('subtitle')}
-        </Heading>
+          <Heading
+            as="h2"
+            color="textPrimary"
+            data-testid="subtitle"
+            textAlign={{ base: 'center', md: 'left' }}
+          >
+            {translate('subtitle')}
+          </Heading>
+          <Flex gap="0.8rem">
+            {([7, 30] as const).map((days) => (
+              <Button
+                key={days}
+                bg={historyDays === days ? 'primary' : 'transparent'}
+                color={historyDays === days ? 'bgColor' : 'textPrimary'}
+                fontSize="1.4rem"
+                fontWeight="500"
+                p="0.8rem 1.2rem"
+                borderRadius="0.8rem"
+                onClick={() => setHistoryDays(days)}
+                aria-pressed={historyDays === days}
+              >
+                {translate(days === 7 ? 'chart.days7' : 'chart.days30')}
+              </Button>
+            ))}
+          </Flex>
+        </Flex>
 
-        <Chart data={data} summary={resultSummary} />
+        <Chart
+          data={historyPoints}
+          summary={translate('chart.history', {
+            from: fromCode,
+            to: toCode,
+            days: historyDays
+          })}
+          dateLabel={translate('chart.date')}
+          rateLabel={translate('chart.rate')}
+          message={
+            isSameFlag
+              ? translate('chart.samePair')
+              : historyLoading && historyPoints.length === 0
+                ? translate('chart.loading')
+                : historyError
+                  ? translate('chart.empty')
+                  : historyPoints.length === 0
+                    ? translate('chart.empty')
+                    : undefined
+          }
+        />
 
         <CurrencyBoard
           amountValue={currencyValueIn}
