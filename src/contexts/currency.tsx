@@ -20,6 +20,7 @@ export type CurrencyContextData = {
 
   isLoading: boolean;
   hasError: boolean;
+  isStale: boolean;
   quoteRates: QuoteRates;
 
   setCurrencyValueIn: (value: string) => void;
@@ -38,6 +39,7 @@ export const CurrencyContextDefaultValues: CurrencyContextData = {
 
   isLoading: false,
   hasError: false,
+  isStale: false,
   quoteRates: {},
 
   setCurrencyValueIn: () => null,
@@ -71,7 +73,7 @@ export const CurrencyProvider = ({ children }: CurrencyProviderProps) => {
       readSharedParams().to ?? (getNavigatorLanguage() === 'en' ? 'eur' : 'usd')
   );
 
-  const { quoteRates, isLoading, hasError, convertedValue } = useQuote(
+  const { quoteRates, isLoading, hasError, isStale, convertedValue } = useQuote(
     currencyFlagIn,
     currencyFlagOut,
     currencyValueIn
@@ -95,6 +97,7 @@ export const CurrencyProvider = ({ children }: CurrencyProviderProps) => {
         currencyFlagOut,
         isLoading,
         hasError,
+        isStale,
         quoteRates,
         setCurrencyValueIn,
         setCurrencyValueOut,

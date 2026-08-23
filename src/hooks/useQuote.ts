@@ -6,8 +6,23 @@ import { useEffect, useState } from 'react';
 import { getLastQuotes } from 'services/queries';
 import { AcceptedCurrencies } from 'types/acceptedCurrencies';
 import { currencyList } from 'utils/currencies';
+import { readQuoteCache, writeQuoteCache } from 'utils/quoteCache';
 
 export type QuoteRates = Partial<Record<AcceptedCurrencies, number>>;
+
+const convertAmount = (
+  rates: QuoteRates,
+  from: AcceptedCurrencies,
+  to: AcceptedCurrencies,
+  amount: number
+) => {
+  if (from === to) return amount.toFixed(2);
+
+  const ask = rates[to];
+  if (ask === undefined || !Number.isFinite(ask)) return null;
+
+  return (amount * ask).toFixed(2);
+};
 
 export const useQuote = (
   from: AcceptedCurrencies,
@@ -17,6 +32,7 @@ export const useQuote = (
   const [quoteRates, setQuoteRates] = useState<QuoteRates>({});
   const [isLoading, setIsLoading] = useState(false);
   const [hasError, setHasError] = useState(false);
+  const [isStale, setIsStale] = useState(false);
   const [convertedValue, setConvertedValue] = useState('');
 
   const debouncedFrom = useDebounce(from, 500);
@@ -28,6 +44,39 @@ export const useQuote = (
 
     if (!debouncedAmountValue.trim() || !Number.isFinite(amount)) return;
 
+    const applyRates = (rates: QuoteRates, stale: boolean) => {
+      const converted = convertAmount(
+        rates,
+        debouncedFrom,
+        debouncedTo,
+        amount
+      );
+      if (converted === null) return false;
+
+      setQuoteRates(rates);
+      setConvertedValue(converted);
+      setHasError(false);
+      setIsStale(stale);
+      return true;
+    };
+
+    const cached = readQuoteCache(debouncedFrom);
+    if (cached) applyRates(cached, false);
+
+    const restoreCachedQuote = () => {
+      const fallback = cached ?? readQuoteCache(debouncedFrom);
+      if (fallback && applyRates(fallback, true)) return true;
+      setHasError(true);
+      setIsStale(false);
+      return false;
+    };
+
+    if (typeof navigator !== 'undefined' && navigator.onLine === false) {
+      restoreCachedQuote();
+      setIsLoading(false);
+      return;
+    }
+
     const controller = new AbortController();
     const targets = currencyList
       .map((item) => item.code)
@@ -36,6 +85,7 @@ export const useQuote = (
     const loadQuotes = async () => {
       setIsLoading(true);
       setHasError(false);
+      setIsStale(false);
 
       try {
         const { data } = await getLastQuotes(debouncedFrom, targets, {
@@ -50,23 +100,15 @@ export const useQuote = (
           if (Number.isFinite(ask)) rates[target] = ask;
         });
 
-        setQuoteRates(rates);
-
-        if (debouncedFrom === debouncedTo) {
-          setConvertedValue(amount.toFixed(2));
-          return;
-        }
-
-        const ask = rates[debouncedTo];
-        if (ask === undefined || !Number.isFinite(ask)) {
+        if (!applyRates(rates, false)) {
           setHasError(true);
           return;
         }
 
-        setConvertedValue((amount * ask).toFixed(2));
+        writeQuoteCache(debouncedFrom, rates);
       } catch (error) {
         if (axios.isAxiosError(error) && error.code === 'ERR_CANCELED') return;
-        setHasError(true);
+        restoreCachedQuote();
       } finally {
         if (!controller.signal.aborted) setIsLoading(false);
       }
@@ -77,5 +119,5 @@ export const useQuote = (
     return () => controller.abort();
   }, [debouncedFrom, debouncedTo, debouncedAmountValue]);
 
-  return { quoteRates, isLoading, hasError, convertedValue };
+  return { quoteRates, isLoading, hasError, isStale, convertedValue };
 };
