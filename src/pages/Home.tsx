@@ -1,16 +1,17 @@
-import { ChangeEvent, FocusEvent, useState } from 'react';
+import { ChangeEvent, FocusEvent, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { TbArrowsExchange } from 'react-icons/tb';
 
-import { Box, Flex, Heading, Icon, Button, Text } from '@chakra-ui/react';
+import { Box, Button, Flex, Heading, Icon, Text } from '@chakra-ui/react';
 
 import { Chart, CurrencyBoard, Footer, Header, Input } from 'components';
 import { useColorModeValue } from 'components/ui/color-mode';
 import { useCurrency } from 'contexts/currency';
+import { copyText } from 'utils/clipboard';
 import { CURRENCIES } from 'utils/currencies';
 
-import { dark, light } from 'styles/global';
 import { maskCurrency, parseAmount } from 'hooks/Masks';
+import { dark, light } from 'styles/global';
 
 export default function Home() {
   const colors = useColorModeValue(light, dark);
@@ -31,6 +32,10 @@ export default function Home() {
   } = useCurrency();
 
   const [isFocused, setIsFocused] = useState(false);
+  const [copied, setCopied] = useState(false);
+  const copiedTimer = useRef<ReturnType<typeof setTimeout> | undefined>(
+    undefined
+  );
 
   const isSameFlag = currencyFlagIn === currencyFlagOut;
 
@@ -68,6 +73,10 @@ export default function Home() {
     setCurrencyFlagOut(tempCurrencyFlagIn);
   };
 
+  useEffect(() => {
+    return () => window.clearTimeout(copiedTimer.current);
+  }, []);
+
   const currencyValueInFormatted = Number.isFinite(amountIn)
     ? maskCurrency(currencyFlagIn, amountIn)
     : '';
@@ -94,6 +103,26 @@ export default function Home() {
       : isLoading
         ? translate('loading')
         : '';
+
+  const resultSummary = translate('chart.summary', {
+    fromAmount: currencyValueInFormatted || '—',
+    from: fromCode,
+    toAmount: currencyValueOutFormatted || '—',
+    to: toCode
+  });
+
+  const handleCopyResult = async () => {
+    if (!currencyValueOutFormatted) return;
+
+    try {
+      await copyText(resultSummary);
+      setCopied(true);
+      window.clearTimeout(copiedTimer.current);
+      copiedTimer.current = window.setTimeout(() => setCopied(false), 2000);
+    } catch {
+      setCopied(false);
+    }
+  };
 
   return (
     <Box
@@ -125,7 +154,7 @@ export default function Home() {
 
         <Flex
           alignItems="center"
-          gap={{ base: '1rem', md: '1.6rem' }}
+          gap="2rem"
           marginBlock="2rem"
           flexDir="column"
           w="100%"
@@ -185,6 +214,27 @@ export default function Home() {
             />
           </Flex>
 
+          <Button
+            bg="primary"
+            color="bgColor"
+            fontSize="1.4rem"
+            fontWeight="500"
+            p="2rem"
+            borderRadius="0.8rem"
+            onClick={handleCopyResult}
+            disabled={!currencyValueOutFormatted || hasError}
+            aria-label={translate('copyResult')}
+            _hover={{
+              filter: 'brightness(1.1)'
+            }}
+            _disabled={{
+              opacity: 0.5,
+              cursor: 'not-allowed'
+            }}
+          >
+            {copied ? translate('copied') : translate('copyResult')}
+          </Button>
+
           <Text
             id="converter-status"
             role={isSameFlag || hasError ? 'alert' : 'status'}
@@ -215,15 +265,7 @@ export default function Home() {
           {translate('subtitle')}
         </Heading>
 
-        <Chart
-          data={data}
-          summary={translate('chart.summary', {
-            fromAmount: currencyValueInFormatted || '—',
-            from: fromCode,
-            toAmount: currencyValueOutFormatted || '—',
-            to: toCode
-          })}
-        />
+        <Chart data={data} summary={resultSummary} />
 
         <CurrencyBoard
           amountValue={currencyValueIn}

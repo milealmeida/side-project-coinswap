@@ -8,6 +8,7 @@ import {
 } from 'react';
 
 import { AcceptedCurrencies } from 'types/acceptedCurrencies';
+import { parseShareSearch, syncShareUrl } from 'utils/shareUrl';
 import { getNavigatorLanguage, getUserDefaultCurrency } from 'utils/userUtils';
 
 export type CurrencyContextData = {
@@ -53,15 +54,21 @@ export type CurrencyProviderProps = {
   children: ReactNode;
 };
 
+const readSharedParams = () =>
+  typeof window === 'undefined' ? {} : parseShareSearch(window.location.search);
+
 export const CurrencyProvider = ({ children }: CurrencyProviderProps) => {
-  const [currencyValueIn, setCurrencyValueIn] = useState('1');
+  const [currencyValueIn, setCurrencyValueIn] = useState(
+    () => readSharedParams().amount ?? '1'
+  );
   const [currencyValueOut, setCurrencyValueOut] = useState('');
 
   const [currencyFlagIn, setCurrencyFlagIn] = useState<AcceptedCurrencies>(
-    getUserDefaultCurrency()
+    () => readSharedParams().from ?? getUserDefaultCurrency()
   );
   const [currencyFlagOut, setCurrencyFlagOut] = useState<AcceptedCurrencies>(
-    getNavigatorLanguage() === 'en' ? 'eur' : 'usd'
+    () =>
+      readSharedParams().to ?? (getNavigatorLanguage() === 'en' ? 'eur' : 'usd')
   );
 
   const { quoteRates, isLoading, hasError, convertedValue } = useQuote(
@@ -74,6 +81,10 @@ export const CurrencyProvider = ({ children }: CurrencyProviderProps) => {
     if (convertedValue === '') return;
     setCurrencyValueOut(convertedValue);
   }, [convertedValue]);
+
+  useEffect(() => {
+    syncShareUrl(currencyFlagIn, currencyFlagOut, currencyValueIn);
+  }, [currencyFlagIn, currencyFlagOut, currencyValueIn]);
 
   return (
     <CurrencyContext.Provider

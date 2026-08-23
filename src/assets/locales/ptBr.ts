@@ -16,6 +16,8 @@ export default {
     amountTo: 'Valor convertido em {{currency}}',
     selectCurrency: 'Selecionar moeda, atual {{currency}}',
     skipToConverter: 'Ir para o conversor',
+    copyResult: 'Copiar resultado',
+    copied: 'Copiado',
     theme: {
       light: 'Mudar para tema claro',
       dark: 'Mudar para tema escuro'

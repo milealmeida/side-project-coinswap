@@ -16,6 +16,8 @@ export default {
     amountTo: 'Converted amount in {{currency}}',
     selectCurrency: 'Select currency, current {{currency}}',
     skipToConverter: 'Skip to converter',
+    copyResult: 'Copy result',
+    copied: 'Copied',
     theme: {
       light: 'Switch to light theme',
       dark: 'Switch to dark theme'
