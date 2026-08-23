@@ -102,7 +102,9 @@ export default function Home() {
       alignItems="center"
       justifyContent="space-between"
       flexDir="column"
-      height="100vh"
+      minH="100vh"
+      css={{ minHeight: '100dvh' }}
+      overflowX="hidden"
     >
       <a href="#converter" data-sr-only>
         {translate('skipToConverter')}
@@ -126,12 +128,16 @@ export default function Home() {
           gap={{ base: '1rem', md: '1.6rem' }}
           marginBlock="2rem"
           flexDir="column"
+          w="100%"
+          maxW="60rem"
           paddingInline={{ base: '2rem', md: 0 }}
         >
           <Flex
             alignItems="center"
+            justifyContent="center"
             gap={{ base: '1rem', md: '1.6rem' }}
             flexDir={{ base: 'column', md: 'row' }}
+            w="100%"
           >
             <Input
               inputMode="decimal"

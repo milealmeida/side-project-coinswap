@@ -23,21 +23,27 @@ const Chart = ({ data, summary }: ChartProps) => {
   const toKey = dataKeys[2];
 
   return (
-    <Box as="figure" w="100%" maxW="60rem" m={0}>
-      <Box height={400} aria-hidden="true">
+    <Box
+      as="figure"
+      w="100%"
+      maxW="60rem"
+      m={0}
+      paddingInline={{ base: '2rem', md: 0 }}
+    >
+      <Box height={{ base: '22rem', md: '40rem' }} aria-hidden="true">
         <ResponsiveContainer width="100%" height="100%">
           <BarChart
             width={500}
             height={300}
             data={data}
             margin={{
-              top: 5,
-              right: 30,
-              left: 20,
-              bottom: 5
+              top: 8,
+              right: 8,
+              left: 0,
+              bottom: 0
             }}
             barSize={60}
-            barGap={60}
+            barGap={24}
           >
             <XAxis dataKey="name" />
             <YAxis />

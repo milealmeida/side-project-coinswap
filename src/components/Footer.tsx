@@ -13,15 +13,16 @@ const Footer = () => {
   return (
     <Center as="footer">
       <Flex
-        p="2.5rem"
+        p={{ base: '1.6rem 2rem 2.5rem', md: '2.5rem' }}
         fontSize="1.4rem"
         gap="0.8rem"
         color={colors.textSecondary}
         fontWeight="500"
+        alignItems="center"
+        justifyContent="center"
+        flexWrap="wrap"
       >
-        <Text pt={2} display={{ base: 'none', md: 'flex' }}>
-          {translate('footer.created')}
-        </Text>
+        <Text>{translate('footer.created')}</Text>
         <AvatarGroup>
           {contributors.map(({ fullName, githubUsername }) => (
             <Avatar

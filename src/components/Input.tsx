@@ -52,6 +52,7 @@ const InputComponent = ({
 
   return (
     <Flex
+      w={{ base: '100%', md: 'auto' }}
       borderRadius="0.8rem"
       borderWidth="1.5px"
       borderStyle="solid"
@@ -65,7 +66,9 @@ const InputComponent = ({
       <Input
         ref={reference}
         p={{ base: '2.2rem', md: '2.6rem 1.6rem' }}
-        maxW="16.2rem"
+        flex="1"
+        minW="0"
+        maxW={{ base: 'none', md: '16.2rem' }}
         w="100%"
         fontSize="1.6rem"
         border="none"
@@ -98,7 +101,8 @@ const InputComponent = ({
         <Menu.Trigger asChild>
           <Button
             p={{ base: '2.2rem 1.2rem', md: '2.6rem 1.6rem' }}
-            maxW="13rem"
+            flexShrink={0}
+            maxW={{ base: '12rem', md: '13rem' }}
             w="100%"
             bg="transparent"
             aria-label={currencyAriaLabel}
