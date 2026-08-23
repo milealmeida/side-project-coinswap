@@ -12,8 +12,17 @@ export default {
     loading: 'Loading exchange rate...',
     swapCurrencies: 'Swap currencies',
     languageMenu: 'Select language',
+    amountFrom: 'Amount in {{currency}}',
+    amountTo: 'Converted amount in {{currency}}',
+    selectCurrency: 'Select currency, current {{currency}}',
+    skipToConverter: 'Skip to converter',
+    theme: {
+      light: 'Switch to light theme',
+      dark: 'Switch to dark theme'
+    },
     chart: {
-      currency: 'Currency'
+      currency: 'Currency',
+      summary: '{{fromAmount}} ({{from}}) equals {{toAmount}} ({{to}})'
     },
     allCurrencies: 'All currencies',
     footer: {

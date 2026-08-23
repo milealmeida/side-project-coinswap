@@ -11,7 +11,7 @@ const Footer = () => {
   const { t: translate } = useTranslation();
 
   return (
-    <Center>
+    <Center as="footer">
       <Flex
         p="2.5rem"
         fontSize="1.4rem"

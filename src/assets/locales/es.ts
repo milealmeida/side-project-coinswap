@@ -12,8 +12,17 @@ export default {
     loading: 'Cargando tipo de cambio...',
     swapCurrencies: 'Intercambiar monedas',
     languageMenu: 'Seleccionar idioma',
+    amountFrom: 'Importe en {{currency}}',
+    amountTo: 'Importe convertido en {{currency}}',
+    selectCurrency: 'Seleccionar moneda, actual {{currency}}',
+    skipToConverter: 'Ir al conversor',
+    theme: {
+      light: 'Cambiar a tema claro',
+      dark: 'Cambiar a tema oscuro'
+    },
     chart: {
-      currency: 'Moneda'
+      currency: 'Moneda',
+      summary: '{{fromAmount}} ({{from}}) equivalen a {{toAmount}} ({{to}})'
     },
     allCurrencies: 'Todas las monedas',
     footer: {

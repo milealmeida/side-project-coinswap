@@ -4,11 +4,11 @@ import { FaChevronDown } from 'react-icons/fa';
 import {
   Button,
   Flex,
-  Heading,
   Image,
   Input,
   Menu,
-  Portal
+  Portal,
+  Text
 } from '@chakra-ui/react';
 
 import { AcceptedCurrencies } from 'types/acceptedCurrencies';
@@ -18,12 +18,14 @@ export type InputComponentProps = {
   currencyCode: AcceptedCurrencies;
   reference?: LegacyRef<HTMLInputElement>;
   onChangeCurrency: (code: AcceptedCurrencies) => void;
+  currencyAriaLabel?: string;
 } & Omit<InputHTMLAttributes<HTMLInputElement>, 'size' | 'color'>;
 
 const InputComponent = ({
   currencyCode,
   reference,
   onChangeCurrency,
+  currencyAriaLabel,
   ...rest
 }: InputComponentProps) => {
   const [outline, setOutline] = useState(false);
@@ -33,15 +35,15 @@ const InputComponent = ({
 
     return (
       <Flex gap="0.8rem" alignItems="center">
-        <Image boxSize="2.4rem" src={item.src} alt={item.alt} />
-        <Heading
+        <Image boxSize="2.4rem" src={item.src} alt="" />
+        <Text
           color="textPrimary"
           fontSize="1.6rem"
           fontWeight={400}
           lineHeight="1.6rem"
         >
           {item.text}
-        </Heading>
+        </Text>
       </Flex>
     );
   };
@@ -77,6 +79,9 @@ const InputComponent = ({
         _disabled={{
           color: 'textPrimary'
         }}
+        _readOnly={{
+          color: 'textPrimary'
+        }}
         onBlur={(event) => {
           setOutline(false);
           onBlur && onBlur(event);
@@ -96,6 +101,7 @@ const InputComponent = ({
             maxW="13rem"
             w="100%"
             bg="transparent"
+            aria-label={currencyAriaLabel}
             _hover={{ bg: 'surfaceSecondary' }}
             _focus={{ bg: 'surfaceSecondary' }}
             _active={{ bg: 'middleGray' }}
@@ -113,7 +119,7 @@ const InputComponent = ({
             >
               {renderCountryCurrency(currencyCode)}
             </Flex>
-            <FaChevronDown />
+            <FaChevronDown aria-hidden="true" />
           </Button>
         </Menu.Trigger>
 

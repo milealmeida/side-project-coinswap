@@ -1,4 +1,4 @@
-import { Flex, Text } from '@chakra-ui/react';
+import { Box } from '@chakra-ui/react';
 import { useTranslation } from 'react-i18next';
 
 import { maskCurrency, parseAmount } from 'hooks/Masks';
@@ -20,38 +20,57 @@ const CurrencyBoard = ({
   const amount = parseAmount(fromFlag, amountValue);
 
   return (
-    <Flex
-      w="100%"
-      maxW="60rem"
-      flexDir="column"
-      gap="0.8rem"
-      paddingInline={{ base: '2rem', md: 0 }}
-      data-testid="currency-board"
-    >
-      <Text color="textSecondary" fontSize="1.4rem" fontWeight="500">
-        {translate('allCurrencies')}
-      </Text>
-      {currencyList.map((item) => {
-        const rate = quoteRates[item.code];
-        const converted =
-          Number.isFinite(amount) && rate !== undefined && Number.isFinite(rate)
-            ? maskCurrency(item.code, amount * rate)
-            : '—';
+    <Box w="100%" maxW="60rem" paddingInline={{ base: '2rem', md: 0 }}>
+      <table
+        data-testid="currency-board"
+        style={{ width: '100%', borderCollapse: 'collapse' }}
+      >
+        <Box
+          as="caption"
+          textAlign="start"
+          color="textSecondary"
+          fontSize="1.4rem"
+          fontWeight="500"
+          fontStyle="normal"
+          mb="0.8rem"
+        >
+          {translate('allCurrencies')}
+        </Box>
+        <tbody>
+          {currencyList.map((item) => {
+            const rate = quoteRates[item.code];
+            const converted =
+              Number.isFinite(amount) &&
+              rate !== undefined &&
+              Number.isFinite(rate)
+                ? maskCurrency(item.code, amount * rate)
+                : '—';
 
-        return (
-          <Flex
-            key={item.code}
-            justifyContent="space-between"
-            alignItems="center"
-            fontSize="1.6rem"
-            color="textPrimary"
-          >
-            <Text>{item.text}</Text>
-            <Text>{converted}</Text>
-          </Flex>
-        );
-      })}
-    </Flex>
+            return (
+              <tr key={item.code}>
+                <th
+                  scope="row"
+                  style={{
+                    textAlign: 'start',
+                    fontWeight: 400,
+                    padding: '0.4rem 0'
+                  }}
+                >
+                  <Box as="span" color="textPrimary" fontSize="1.6rem">
+                    {item.text}
+                  </Box>
+                </th>
+                <td style={{ textAlign: 'end', padding: '0.4rem 0' }}>
+                  <Box as="span" color="textPrimary" fontSize="1.6rem">
+                    {converted}
+                  </Box>
+                </td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
+    </Box>
   );
 };
 

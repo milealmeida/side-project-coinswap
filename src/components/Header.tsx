@@ -21,19 +21,25 @@ const Header = () => {
   const { t: translate } = useTranslation();
 
   const currentLanguage = i18n.language as AcceptedLanguages;
+  const flagAlt = {
+    ptBr: 'flags.brazil',
+    es: 'flags.spain',
+    en: 'flags.usa'
+  } as const;
 
-  const renderCountryIcon = (iconKey: AcceptedLanguages) => {
+  const renderCountryIcon = (iconKey: AcceptedLanguages, alt: string) => {
     const data = {
-      ptBr: <Image w="3rem" src={ptBr} alt={translate('flags.brazil')} />,
-      es: <Image w="3rem" src={es} alt={translate('flags.spain')} />,
-      en: <Image w="3rem" src={usa} alt={translate('flags.usa')} />
+      ptBr: ptBr,
+      es: es,
+      en: usa
     };
 
-    return data[iconKey] ?? data.en;
+    return <Image w="3rem" src={data[iconKey] ?? usa} alt={alt} />;
   };
 
   return (
     <Flex
+      as="header"
       maxW="120rem"
       w="100%"
       marginInline="auto"
@@ -41,8 +47,8 @@ const Header = () => {
       justifyContent="space-between"
       p={{ base: '2rem', md: '4rem' }}
     >
-      <Link href="/">
-        <Heading>CoinSwap</Heading>
+      <Link href="/" aria-label="CoinSwap">
+        <Heading as="p">CoinSwap</Heading>
       </Link>
 
       <Flex gap="2rem">
@@ -51,11 +57,19 @@ const Header = () => {
           width="3rem"
           height="3rem"
           bg="transparent"
-          aria-label="toggle theme"
+          aria-label={
+            colorMode === 'dark'
+              ? translate('theme.light')
+              : translate('theme.dark')
+          }
           rounded="full"
           onClick={toggleColorMode}
         >
-          {colorMode === 'dark' ? <FaSun /> : <FaMoon />}
+          {colorMode === 'dark' ? (
+            <FaSun aria-hidden="true" />
+          ) : (
+            <FaMoon aria-hidden="true" />
+          )}
         </IconButton>
 
         <Menu.Root lazyMount>
@@ -63,7 +77,10 @@ const Header = () => {
             fontSize="1.6rem"
             aria-label={translate('languageMenu')}
           >
-            {renderCountryIcon(currentLanguage)}
+            {renderCountryIcon(
+              currentLanguage,
+              translate(flagAlt[currentLanguage] ?? flagAlt.en)
+            )}
           </Menu.Trigger>
           <Portal>
             <Menu.Positioner>
@@ -73,9 +90,10 @@ const Header = () => {
                     key={label}
                     value={code}
                     justifyContent="center"
+                    aria-label={label}
                     onClick={() => i18n.changeLanguage(code)}
                   >
-                    {renderCountryIcon(code as AcceptedLanguages)}
+                    {renderCountryIcon(code as AcceptedLanguages, '')}
                   </Menu.Item>
                 ))}
               </Menu.Content>

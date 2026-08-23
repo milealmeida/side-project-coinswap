@@ -10,7 +10,12 @@ const Avatar = ({ fullName, githubUsername }: AvatarProps) => {
   const githubLink = `https://github.com/${githubUsername}`;
 
   return (
-    <Link href={githubLink} target="_blank" rel="noopener noreferrer">
+    <Link
+      href={githubLink}
+      target="_blank"
+      rel="noopener noreferrer"
+      aria-label={fullName}
+    >
       <ChakraAvatar.Root>
         <ChakraAvatar.Fallback name={fullName} />
         <ChakraAvatar.Image src={photoUrl} />
