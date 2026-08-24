@@ -1,4 +1,4 @@
-import { useQuote, type QuoteRates } from 'hooks/useQuote';
+import { useQuote, type QuoteRates, type QuoteTimes } from 'hooks/useQuote';
 import {
   createContext,
   useContext,
@@ -22,6 +22,7 @@ export type CurrencyContextData = {
   hasError: boolean;
   isStale: boolean;
   quoteRates: QuoteRates;
+  quotedAt: QuoteTimes;
 
   setCurrencyValueIn: (value: string) => void;
   setCurrencyValueOut: (value: string) => void;
@@ -41,6 +42,7 @@ export const CurrencyContextDefaultValues: CurrencyContextData = {
   hasError: false,
   isStale: false,
   quoteRates: {},
+  quotedAt: {},
 
   setCurrencyValueIn: () => null,
   setCurrencyValueOut: () => null,
@@ -73,11 +75,8 @@ export const CurrencyProvider = ({ children }: CurrencyProviderProps) => {
       readSharedParams().to ?? (getNavigatorLanguage() === 'en' ? 'eur' : 'usd')
   );
 
-  const { quoteRates, isLoading, hasError, isStale, convertedValue } = useQuote(
-    currencyFlagIn,
-    currencyFlagOut,
-    currencyValueIn
-  );
+  const { quoteRates, quotedAt, isLoading, hasError, isStale, convertedValue } =
+    useQuote(currencyFlagIn, currencyFlagOut, currencyValueIn);
 
   useEffect(() => {
     if (convertedValue === '') return;
@@ -99,6 +98,7 @@ export const CurrencyProvider = ({ children }: CurrencyProviderProps) => {
         hasError,
         isStale,
         quoteRates,
+        quotedAt,
         setCurrencyValueIn,
         setCurrencyValueOut,
         setCurrencyFlagIn,

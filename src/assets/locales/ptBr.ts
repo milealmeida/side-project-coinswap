@@ -11,6 +11,8 @@ export default {
     requestError: 'Não foi possível buscar a taxa de câmbio',
     loading: 'Carregando taxa de câmbio...',
     staleQuote: 'Cotação em cache · pode estar desatualizada',
+    quoteStamp: '{{when}} · Fonte {{source}}',
+    quoteSource: 'AwesomeAPI',
     swapCurrencies: 'Inverter moedas',
     languageMenu: 'Selecionar idioma',
     amountFrom: 'Valor em {{currency}}',

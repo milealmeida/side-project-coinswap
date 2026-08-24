@@ -11,6 +11,8 @@ export default {
     requestError: 'Could not fetch the exchange rate',
     loading: 'Loading exchange rate...',
     staleQuote: 'Cached rate · may be out of date',
+    quoteStamp: '{{when}} · From {{source}}',
+    quoteSource: 'AwesomeAPI',
     swapCurrencies: 'Swap currencies',
     languageMenu: 'Select language',
     amountFrom: 'Amount in {{currency}}',

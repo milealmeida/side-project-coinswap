@@ -11,6 +11,7 @@ import { maskCurrency, parseAmount } from 'hooks/Masks';
 import { useQuoteHistory, type HistoryRange } from 'hooks/useQuoteHistory';
 import { copyText } from 'utils/clipboard';
 import { CURRENCIES } from 'utils/currencies';
+import { formatQuoteStamp } from 'utils/quoteMeta';
 import { toHtmlLang } from 'utils/userUtils';
 
 import { dark, light } from 'styles/global';
@@ -28,6 +29,7 @@ export default function Home() {
     hasError,
     isStale,
     quoteRates,
+    quotedAt,
     setCurrencyFlagIn,
     setCurrencyFlagOut,
     setCurrencyValueIn,
@@ -91,17 +93,26 @@ export default function Home() {
 
   const fromCode = CURRENCIES[currencyFlagIn].text;
   const toCode = CURRENCIES[currencyFlagOut].text;
+  const locale = toHtmlLang(i18n.language);
+  const quoteUpdatedAt = quotedAt[currencyFlagOut];
+  const showQuoteUpdated = !isSameFlag && quoteUpdatedAt !== undefined;
+
+  const quoteUpdated = showQuoteUpdated
+    ? translate('quoteStamp', {
+        when: formatQuoteStamp(quoteUpdatedAt, locale),
+        source: translate('quoteSource')
+      })
+    : '';
+
+  const statusDescribedBy = showQuoteUpdated
+    ? 'converter-status quote-rate'
+    : 'converter-status';
 
   const {
     points: historyPoints,
     isLoading: historyLoading,
     hasError: historyError
-  } = useQuoteHistory(
-    currencyFlagIn,
-    currencyFlagOut,
-    historyDays,
-    toHtmlLang(i18n.language)
-  );
+  } = useQuoteHistory(currencyFlagIn, currencyFlagOut, historyDays, locale);
 
   const showStaleBadge = isStale && !isSameFlag && !hasError;
 
@@ -193,7 +204,7 @@ export default function Home() {
                 currency: fromCode
               })}
               aria-invalid={isSameFlag}
-              aria-describedby="converter-status"
+              aria-describedby={statusDescribedBy}
             />
 
             <Button
@@ -221,9 +232,21 @@ export default function Home() {
                 currency: toCode
               })}
               aria-invalid={isSameFlag}
-              aria-describedby="converter-status"
+              aria-describedby={statusDescribedBy}
             />
           </Flex>
+
+          {quoteUpdated && (
+            <Text
+              id="quote-rate"
+              data-testid="quote-rate"
+              color="textSecondary"
+              fontSize="1.4rem"
+              textAlign="center"
+            >
+              {quoteUpdated}
+            </Text>
+          )}
 
           <Button
             bg="primary"

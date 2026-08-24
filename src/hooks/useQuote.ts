@@ -6,9 +6,15 @@ import { useEffect, useState } from 'react';
 import { getLastQuotes } from 'services/queries';
 import { AcceptedCurrencies } from 'types/acceptedCurrencies';
 import { currencyList } from 'utils/currencies';
-import { readQuoteCache, writeQuoteCache } from 'utils/quoteCache';
+import {
+  readQuoteCache,
+  writeQuoteCache,
+  type CachedQuotedAt
+} from 'utils/quoteCache';
+import { parseQuoteTimestamp } from 'utils/quoteMeta';
 
 export type QuoteRates = Partial<Record<AcceptedCurrencies, number>>;
+export type QuoteTimes = CachedQuotedAt;
 
 const convertAmount = (
   rates: QuoteRates,
@@ -30,6 +36,7 @@ export const useQuote = (
   amountValue: string
 ) => {
   const [quoteRates, setQuoteRates] = useState<QuoteRates>({});
+  const [quotedAt, setQuotedAt] = useState<QuoteTimes>({});
   const [isLoading, setIsLoading] = useState(false);
   const [hasError, setHasError] = useState(false);
   const [isStale, setIsStale] = useState(false);
@@ -44,7 +51,11 @@ export const useQuote = (
 
     if (!debouncedAmountValue.trim() || !Number.isFinite(amount)) return;
 
-    const applyRates = (rates: QuoteRates, stale: boolean) => {
+    const applyRates = (
+      rates: QuoteRates,
+      times: QuoteTimes,
+      stale: boolean
+    ) => {
       const converted = convertAmount(
         rates,
         debouncedFrom,
@@ -54,6 +65,7 @@ export const useQuote = (
       if (converted === null) return false;
 
       setQuoteRates(rates);
+      setQuotedAt(times);
       setConvertedValue(converted);
       setHasError(false);
       setIsStale(stale);
@@ -61,11 +73,13 @@ export const useQuote = (
     };
 
     const cached = readQuoteCache(debouncedFrom);
-    if (cached) applyRates(cached, false);
+    if (cached) applyRates(cached.rates, cached.quotedAt, false);
 
     const restoreCachedQuote = () => {
       const fallback = cached ?? readQuoteCache(debouncedFrom);
-      if (fallback && applyRates(fallback, true)) return true;
+      if (fallback && applyRates(fallback.rates, fallback.quotedAt, true)) {
+        return true;
+      }
       setHasError(true);
       setIsStale(false);
       return false;
@@ -93,19 +107,24 @@ export const useQuote = (
         });
 
         const rates: QuoteRates = { [debouncedFrom]: 1 };
+        const times: QuoteTimes = {};
 
         targets.forEach((target) => {
           const key = `${debouncedFrom}${target}`.toUpperCase();
-          const ask = Number(data[key]?.ask);
+          const quote = data[key];
+          const ask = Number(quote?.ask);
           if (Number.isFinite(ask)) rates[target] = ask;
+
+          const quotedTime = parseQuoteTimestamp(quote);
+          if (quotedTime !== undefined) times[target] = quotedTime;
         });
 
-        if (!applyRates(rates, false)) {
+        if (!applyRates(rates, times, false)) {
           setHasError(true);
           return;
         }
 
-        writeQuoteCache(debouncedFrom, rates);
+        writeQuoteCache(debouncedFrom, rates, times);
       } catch (error) {
         if (axios.isAxiosError(error) && error.code === 'ERR_CANCELED') return;
         restoreCachedQuote();
@@ -119,5 +138,12 @@ export const useQuote = (
     return () => controller.abort();
   }, [debouncedFrom, debouncedTo, debouncedAmountValue]);
 
-  return { quoteRates, isLoading, hasError, isStale, convertedValue };
+  return {
+    quoteRates,
+    quotedAt,
+    isLoading,
+    hasError,
+    isStale,
+    convertedValue
+  };
 };
