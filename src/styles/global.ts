@@ -28,16 +28,18 @@ export const system = createSystem(
       '[data-sr-only]': {
         border: '0',
         clip: 'rect(0, 0, 0, 0)',
+        clipPath: 'inset(50%)',
         height: '1px',
+        width: '1px',
         margin: '-1px',
         overflow: 'hidden',
         padding: '0',
         position: 'absolute',
-        width: '1px',
         whiteSpace: 'nowrap'
       },
       '[data-sr-only]:focus': {
         clip: 'auto',
+        clipPath: 'none',
         height: 'auto',
         width: 'auto',
         margin: '0',
