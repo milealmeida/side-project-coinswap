@@ -1,20 +1,21 @@
 import {
   Flex,
   Heading,
+  Icon,
   IconButton,
   Image,
   Link,
   Menu,
   Portal
 } from '@chakra-ui/react';
-import { FaMoon, FaSun } from 'react-icons/fa';
-import { useTranslation } from 'react-i18next';
 import i18n from 'i18next';
+import { useTranslation } from 'react-i18next';
+import { FaMoon, FaSun } from 'react-icons/fa';
 
+import { es, ptBr, usa } from 'assets/img';
+import { languages } from 'assets/locales/languages';
 import { useColorMode } from 'components/ui/color-mode';
 import { AcceptedLanguages } from 'types/acceptedLanguages';
-import { languages } from 'assets/locales/languages';
-import { es, ptBr, usa } from 'assets/img';
 
 const Header = () => {
   const { colorMode, toggleColorMode } = useColorMode();
@@ -48,7 +49,9 @@ const Header = () => {
       p={{ base: '2rem', md: '4rem' }}
     >
       <Link href="/" aria-label="CoinSwap">
-        <Heading as="p">CoinSwap</Heading>
+        <Heading as="p" fontSize="2.4rem" fontWeight="700">
+          CoinSwap
+        </Heading>
       </Link>
 
       <Flex gap="2rem">
@@ -57,6 +60,7 @@ const Header = () => {
           width="3rem"
           height="3rem"
           bg="transparent"
+          color="iconExchange"
           aria-label={
             colorMode === 'dark'
               ? translate('theme.light')
@@ -65,11 +69,9 @@ const Header = () => {
           rounded="full"
           onClick={toggleColorMode}
         >
-          {colorMode === 'dark' ? (
-            <FaSun aria-hidden="true" />
-          ) : (
-            <FaMoon aria-hidden="true" />
-          )}
+          <Icon aria-hidden="true" color="iconExchange" boxSize="1.6rem">
+            {colorMode === 'dark' ? <FaSun /> : <FaMoon />}
+          </Icon>
         </IconButton>
 
         <Menu.Root lazyMount>

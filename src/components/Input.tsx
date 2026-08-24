@@ -4,6 +4,7 @@ import { FaChevronDown } from 'react-icons/fa';
 import {
   Button,
   Flex,
+  Icon,
   Image,
   Input,
   Menu,
@@ -29,6 +30,7 @@ const InputComponent = ({
   ...rest
 }: InputComponentProps) => {
   const [outline, setOutline] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const renderCountryCurrency = (currencyKey: AcceptedCurrencies) => {
     const item = CURRENCIES[currencyKey] ?? CURRENCIES.usd;
@@ -97,7 +99,7 @@ const InputComponent = ({
 
       <Flex bg="middleGray" width="0.1rem" height="2.4rem" />
 
-      <Menu.Root>
+      <Menu.Root onOpenChange={(event) => setIsMenuOpen(event.open)}>
         <Menu.Trigger asChild>
           <Button
             p={{ base: '2.2rem 1.2rem', md: '2.6rem 1.6rem' }}
@@ -123,7 +125,14 @@ const InputComponent = ({
             >
               {renderCountryCurrency(currencyCode)}
             </Flex>
-            <FaChevronDown aria-hidden="true" />
+            <Icon
+              color="iconExchange"
+              aria-hidden="true"
+              transform={isMenuOpen ? 'rotate(180deg)' : 'rotate(0deg)'}
+              transition="transform 0.2s ease"
+            >
+              <FaChevronDown />
+            </Icon>
           </Button>
         </Menu.Trigger>
 

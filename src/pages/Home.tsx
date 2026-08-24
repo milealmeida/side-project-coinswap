@@ -169,6 +169,7 @@ export default function Home() {
           outline="none"
           color="primary"
           data-testid="title"
+          fontSize="2.2rem"
           paddingInline={{ base: '2rem', md: 0 }}
         >
           {translate('title')}
