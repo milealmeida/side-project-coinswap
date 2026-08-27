@@ -1,5 +1,10 @@
 import { type AcceptedCurrencies } from 'types/acceptedCurrencies';
-import { type AcceptedLanguages } from 'types/acceptedLanguages';
+import {
+  isAcceptedLanguage,
+  type AcceptedLanguages
+} from 'types/acceptedLanguages';
+
+export const LANGUAGE_STORAGE_KEY = 'language';
 
 export const getNavigatorLanguage = (): AcceptedLanguages => {
   const language = navigator.language.toLowerCase();
@@ -9,6 +14,30 @@ export const getNavigatorLanguage = (): AcceptedLanguages => {
 
   return 'en';
 };
+
+export const readStoredLanguage = (): AcceptedLanguages | undefined => {
+  if (typeof window === 'undefined') return undefined;
+
+  try {
+    const stored = window.localStorage.getItem(LANGUAGE_STORAGE_KEY);
+    return isAcceptedLanguage(stored) ? stored : undefined;
+  } catch {
+    return undefined;
+  }
+};
+
+export const persistLanguage = (language: string) => {
+  if (typeof window === 'undefined' || !isAcceptedLanguage(language)) return;
+
+  try {
+    window.localStorage.setItem(LANGUAGE_STORAGE_KEY, language);
+  } catch {
+    /* ignore */
+  }
+};
+
+export const getInitialLanguage = (): AcceptedLanguages =>
+  readStoredLanguage() ?? getNavigatorLanguage();
 
 export const toHtmlLang = (language: string): string => {
   const normalized = language.toLowerCase();
