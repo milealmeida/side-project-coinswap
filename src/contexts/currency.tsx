@@ -79,7 +79,6 @@ export const CurrencyProvider = ({ children }: CurrencyProviderProps) => {
     useQuote(currencyFlagIn, currencyFlagOut, currencyValueIn);
 
   useEffect(() => {
-    if (convertedValue === '') return;
     setCurrencyValueOut(convertedValue);
   }, [convertedValue]);
 

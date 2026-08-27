@@ -82,6 +82,7 @@ export const useQuote = (
       }
       setHasError(true);
       setIsStale(false);
+      setConvertedValue('');
       return false;
     };
 
@@ -119,12 +120,25 @@ export const useQuote = (
           if (quotedTime !== undefined) times[target] = quotedTime;
         });
 
-        if (!applyRates(rates, times, false)) {
-          setHasError(true);
+        const converted = convertAmount(
+          rates,
+          debouncedFrom,
+          debouncedTo,
+          amount
+        );
+
+        setQuoteRates(rates);
+        setQuotedAt(times);
+
+        if (converted !== null) {
+          setConvertedValue(converted);
+          setHasError(false);
+          setIsStale(false);
+          writeQuoteCache(debouncedFrom, rates, times);
           return;
         }
 
-        writeQuoteCache(debouncedFrom, rates, times);
+        restoreCachedQuote();
       } catch (error) {
         if (axios.isAxiosError(error) && error.code === 'ERR_CANCELED') return;
         restoreCachedQuote();
