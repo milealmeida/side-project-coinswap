@@ -6,7 +6,7 @@ export type AvatarProps = {
 };
 
 const Avatar = ({ fullName, githubUsername }: AvatarProps) => {
-  const photoUrl = `https://github.com/${githubUsername}.png`;
+  const photoUrl = `https://avatars.githubusercontent.com/${githubUsername}`;
   const githubLink = `https://github.com/${githubUsername}`;
 
   return (
