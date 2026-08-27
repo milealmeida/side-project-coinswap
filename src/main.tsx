@@ -6,6 +6,12 @@ import { Provider } from 'components/ui/provider';
 
 import App from './App.tsx';
 
+try {
+  window.localStorage.removeItem('coinswap:quotes:v1');
+} catch {
+  /* ignore */
+}
+
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
   <React.StrictMode>
     <Provider>

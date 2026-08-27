@@ -10,7 +10,6 @@ export default {
     errorMessage: 'Os inputs não podem ser iguais',
     requestError: 'Não foi possível buscar a taxa de câmbio',
     loading: 'Carregando taxa de câmbio...',
-    staleQuote: 'Cotação em cache · pode estar desatualizada',
     quoteStamp: '{{when}} · Fonte {{source}}',
     quoteSource: 'AwesomeAPI',
     swapCurrencies: 'Inverter moedas',

@@ -27,7 +27,6 @@ export default function Home() {
     currencyFlagOut,
     isLoading,
     hasError,
-    isStale,
     quoteRates,
     quotedAt,
     setCurrencyFlagIn,
@@ -114,17 +113,13 @@ export default function Home() {
     hasError: historyError
   } = useQuoteHistory(currencyFlagIn, currencyFlagOut, historyDays, locale);
 
-  const showStaleBadge = isStale && !isSameFlag && !hasError;
-
   const statusMessage = isSameFlag
     ? translate('errorMessage')
     : hasError
       ? translate('requestError')
-      : showStaleBadge
-        ? translate('staleQuote')
-        : isLoading
-          ? translate('loading')
-          : '';
+      : isLoading
+        ? translate('loading')
+        : '';
 
   const resultSummary = translate('chart.summary', {
     fromAmount: currencyValueInFormatted || '—',
@@ -274,23 +269,15 @@ export default function Home() {
             id="converter-status"
             role={isSameFlag || hasError ? 'alert' : 'status'}
             aria-live="polite"
-            fontSize={showStaleBadge ? '1.2rem' : 'lg'}
-            fontWeight={showStaleBadge ? '500' : undefined}
+            fontSize="lg"
             color={isSameFlag || hasError ? 'red' : 'textSecondary'}
-            borderWidth={showStaleBadge ? '1px' : undefined}
-            borderColor={showStaleBadge ? 'accent' : undefined}
-            borderRadius={showStaleBadge ? '999px' : undefined}
-            px={showStaleBadge ? '1.2rem' : undefined}
-            py={showStaleBadge ? '0.4rem' : undefined}
             data-sr-only={statusMessage ? undefined : true}
             data-testid={
               hasError && !isSameFlag
                 ? 'request-error'
-                : showStaleBadge
-                  ? 'stale-quote'
-                  : isLoading && !isSameFlag
-                    ? 'loading'
-                    : undefined
+                : isLoading && !isSameFlag
+                  ? 'loading'
+                  : undefined
             }
           >
             {statusMessage}

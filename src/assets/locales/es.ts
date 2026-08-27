@@ -10,7 +10,6 @@ export default {
     errorMessage: 'Las entradas no pueden ser las mismas.',
     requestError: 'No se pudo obtener el tipo de cambio',
     loading: 'Cargando tipo de cambio...',
-    staleQuote: 'Cotización en caché · puede estar desactualizada',
     quoteStamp: '{{when}} · De {{source}}',
     quoteSource: 'AwesomeAPI',
     swapCurrencies: 'Intercambiar monedas',

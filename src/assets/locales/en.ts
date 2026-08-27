@@ -10,7 +10,6 @@ export default {
     errorMessage: 'The inputs cannot be the same',
     requestError: 'Could not fetch the exchange rate',
     loading: 'Loading exchange rate...',
-    staleQuote: 'Cached rate · may be out of date',
     quoteStamp: '{{when}} · From {{source}}',
     quoteSource: 'AwesomeAPI',
     swapCurrencies: 'Swap currencies',
