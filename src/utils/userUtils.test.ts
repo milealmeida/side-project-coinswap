@@ -1,17 +1,23 @@
-import { LANGUAGE_STORAGE_KEY, getInitialLanguage } from './userUtils';
+import {
+  LANGUAGE_STORAGE_KEY,
+  getInitialLanguage,
+  getUserDefaultCurrency,
+  persistLanguage,
+  toHtmlLang
+} from './userUtils';
+
+const languageSpy = jest.spyOn(window.navigator, 'language', 'get');
+
+beforeEach(() => {
+  localStorage.clear();
+  languageSpy.mockReturnValue('en-US');
+});
+
+afterAll(() => {
+  languageSpy.mockRestore();
+});
 
 describe('getInitialLanguage', () => {
-  const languageSpy = jest.spyOn(window.navigator, 'language', 'get');
-
-  beforeEach(() => {
-    localStorage.clear();
-    languageSpy.mockReturnValue('en-US');
-  });
-
-  afterAll(() => {
-    languageSpy.mockRestore();
-  });
-
   it('maps the browser language to an accepted code', () => {
     languageSpy.mockReturnValue('pt-BR');
     expect(getInitialLanguage()).toBe('ptBr');
@@ -38,5 +44,32 @@ describe('getInitialLanguage', () => {
     languageSpy.mockReturnValue('pt-BR');
 
     expect(getInitialLanguage()).toBe('ptBr');
+  });
+});
+
+describe('persistLanguage', () => {
+  it('stores only accepted language codes', () => {
+    persistLanguage('fr');
+    expect(localStorage.getItem(LANGUAGE_STORAGE_KEY)).toBeNull();
+
+    persistLanguage('ptBr');
+    expect(localStorage.getItem(LANGUAGE_STORAGE_KEY)).toBe('ptBr');
+  });
+});
+
+describe('toHtmlLang and getUserDefaultCurrency', () => {
+  it('maps language codes to html lang and default currency', () => {
+    expect(toHtmlLang('ptBr')).toBe('pt-BR');
+    expect(toHtmlLang('es')).toBe('es');
+    expect(toHtmlLang('en')).toBe('en');
+
+    languageSpy.mockReturnValue('pt-BR');
+    expect(getUserDefaultCurrency()).toBe('brl');
+
+    languageSpy.mockReturnValue('es-ES');
+    expect(getUserDefaultCurrency()).toBe('eur');
+
+    languageSpy.mockReturnValue('en-US');
+    expect(getUserDefaultCurrency()).toBe('usd');
   });
 });

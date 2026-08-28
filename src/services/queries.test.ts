@@ -1,7 +1,7 @@
 import { AxiosError } from 'axios';
 
 import http from './axios';
-import { getLastQuotes } from './queries';
+import { getDailyQuotes, getLastQuotes } from './queries';
 
 jest.mock('./axios', () => ({
   __esModule: true,
@@ -135,5 +135,42 @@ describe('getLastQuotes', () => {
 
     await expect(getLastQuotes('jpy', ['eur', 'gbp'])).rejects.toBe(error);
     expect(get).toHaveBeenCalledTimes(1);
+  });
+
+  it('keeps a valid inverse when another inverse fetch fails', async () => {
+    get.mockImplementation((url) => {
+      const path = String(url);
+      if (path === '/last/eur-jpy') {
+        return Promise.resolve({
+          data: {
+            EURJPY: { ask: '160' }
+          }
+        });
+      }
+      if (path === '/last/gbp-jpy') {
+        return Promise.reject(new AxiosError('Server Error'));
+      }
+      return Promise.resolve({ data: {} });
+    });
+
+    const { data } = await getLastQuotes('jpy', ['eur', 'gbp']);
+
+    expect(data.JPYEUR?.ask).toBe(String(1 / 160));
+    expect(data.JPYGBP).toBeUndefined();
+  });
+});
+
+describe('getDailyQuotes', () => {
+  beforeEach(() => {
+    get.mockReset();
+  });
+
+  it('requests the daily path with the given signal', async () => {
+    const signal = new AbortController().signal;
+    get.mockResolvedValueOnce({ data: [] });
+
+    await getDailyQuotes('usd', 'brl', 30, { signal });
+
+    expect(get).toHaveBeenCalledWith('/json/daily/usd-brl/30', { signal });
   });
 });

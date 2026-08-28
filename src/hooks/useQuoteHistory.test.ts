@@ -4,7 +4,7 @@ import type { AxiosResponse } from 'axios';
 import { getDailyQuotes } from 'services/queries';
 import type { AwesomeQuote } from 'types/awesomeQuote';
 
-import { useQuoteHistory } from './useQuoteHistory';
+import { useQuoteHistory, type HistoryRange } from './useQuoteHistory';
 
 jest.mock('services/queries', () => ({
   getDailyQuotes: jest.fn()
@@ -60,6 +60,40 @@ describe('useQuoteHistory', () => {
       ]);
     });
 
+    expect(result.current.hasError).toBe(false);
+  });
+
+  it('sets an error then refetches when the range changes to 30 days', async () => {
+    mockGetDailyQuotes.mockRejectedValueOnce(new Error('fail'));
+    mockGetDailyQuotes.mockResolvedValue({
+      data: [{ ask: '5.0', timestamp: String(jan1) }]
+    } as AxiosResponse<AwesomeQuote[]>);
+
+    const { result, rerender } = renderHook(
+      ({ days }: { days: HistoryRange }) =>
+        useQuoteHistory('usd', 'brl', days, 'en-US'),
+      { initialProps: { days: 7 } }
+    );
+
+    await waitFor(() => {
+      expect(result.current.hasError).toBe(true);
+    });
+    expect(result.current.points).toEqual([]);
+
+    rerender({ days: 30 });
+
+    await waitFor(() => {
+      expect(result.current.points).toEqual([
+        { date: historyDate(jan1), rate: 5 }
+      ]);
+    });
+
+    expect(mockGetDailyQuotes).toHaveBeenLastCalledWith(
+      'usd',
+      'brl',
+      30,
+      expect.anything()
+    );
     expect(result.current.hasError).toBe(false);
   });
 });

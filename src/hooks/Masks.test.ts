@@ -16,6 +16,14 @@ describe('parseAmount', () => {
   it('parses JPY as a whole number', () => {
     expect(parseAmount('jpy', '1500')).toBe(1500);
   });
+
+  it('parses an already masked USD amount', () => {
+    expect(parseAmount('usd', '$1,234.56')).toBe(1234.56);
+  });
+
+  it('strips junk and keeps a negative loose amount', () => {
+    expect(parseAmount('eur', '-10,5abc')).toBe(-10.5);
+  });
 });
 
 describe('maskCurrency', () => {
