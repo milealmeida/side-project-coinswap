@@ -239,4 +239,54 @@ describe('<Home />', () => {
       expect(copy).toHaveTextContent('Copied');
     });
   });
+
+  it('requests 30-day history when the range is changed', async () => {
+    const user = userEvent.setup();
+    await renderHome();
+
+    await user.click(screen.getByRole('button', { name: '30 days' }));
+
+    expect(screen.getByRole('button', { name: '30 days' })).toHaveAttribute(
+      'aria-pressed',
+      'true'
+    );
+    await waitFor(() => {
+      expect(mockGetDailyQuotes).toHaveBeenCalledWith(
+        'usd',
+        'eur',
+        30,
+        expect.anything()
+      );
+    });
+  });
+
+  it('reads shared URL params on mount', async () => {
+    window.history.replaceState(null, '', '/?from=jpy&to=usd&amount=10');
+    await renderHome();
+
+    expect(screen.getByLabelText('Amount in JPY')).toBeInTheDocument();
+    expect(
+      screen.getByLabelText('Select currency, current JPY')
+    ).toBeInTheDocument();
+    expect(
+      screen.getByLabelText('Select currency, current USD')
+    ).toBeInTheDocument();
+  });
+
+  it('strips letters, caps the amount at 11 characters, and drops a leading zero', async () => {
+    const user = userEvent.setup();
+    await renderHome();
+
+    const amount = screen.getByLabelText('Amount in USD');
+    await user.click(amount);
+    await user.clear(amount);
+    await user.type(amount, 'abc123456789012');
+
+    expect(amount).toHaveValue('12345678901');
+
+    await user.clear(amount);
+    await user.type(amount, '01');
+
+    expect(amount).toHaveValue('1');
+  });
 });
