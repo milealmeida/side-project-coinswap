@@ -1,9 +1,9 @@
 import { AvatarGroup, Center, Flex, Text } from '@chakra-ui/react';
+import { useTranslation } from 'react-i18next';
 import Avatar from './Avatar';
 
 import { useColorModeValue } from 'components/ui/color-mode';
 import { contributors } from 'mocks/contributors';
-import { useTranslation } from 'react-i18next';
 import { dark, light } from 'styles/global';
 
 const Footer = () => {
@@ -25,13 +25,15 @@ const Footer = () => {
         <Text>{translate('footer.created')}</Text>
 
         <AvatarGroup>
-          {contributors.map(({ fullName, githubUsername }) => (
-            <Avatar
-              key={`${translate('footer.keyTitle')} ${fullName}`}
-              fullName={fullName}
-              githubUsername={githubUsername}
-            />
-          ))}
+          <Flex gap={2}>
+            {contributors.map(({ fullName, githubUsername }) => (
+              <Avatar
+                key={`${translate('footer.keyTitle')} ${fullName}`}
+                fullName={fullName}
+                githubUsername={githubUsername}
+              />
+            ))}
+          </Flex>
         </AvatarGroup>
 
         <Text aria-hidden="true">·</Text>
