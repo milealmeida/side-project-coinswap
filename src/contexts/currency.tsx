@@ -1,5 +1,4 @@
-import { useDebounce } from '@uidotdev/usehooks';
-import { maskCurrency } from 'hooks/Masks';
+import { useQuote, type QuoteRates, type QuoteTimes } from 'hooks/useQuote';
 import {
   createContext,
   useContext,
@@ -8,31 +7,40 @@ import {
   type ReactNode
 } from 'react';
 
-import { getCurrencyValue } from 'services/queries';
-import { getUserDefaultCurrency } from 'utils/userUtils';
+import { AcceptedCurrencies } from 'types/acceptedCurrencies';
+import { parseShareSearch, syncShareUrl } from 'utils/shareUrl';
+import { getNavigatorLanguage, getUserDefaultCurrency } from 'utils/userUtils';
 
 export type CurrencyContextData = {
   currencyValueIn: string;
-  currencyValueInFormatted: string;
   currencyValueOut: string;
 
-  currencyFlagIn: string;
-  currencyFlagOut: string;
+  currencyFlagIn: AcceptedCurrencies;
+  currencyFlagOut: AcceptedCurrencies;
+
+  isLoading: boolean;
+  hasError: boolean;
+  quoteRates: QuoteRates;
+  quotedAt: QuoteTimes;
 
   setCurrencyValueIn: (value: string) => void;
   setCurrencyValueOut: (value: string) => void;
 
-  setCurrencyFlagIn: (value: string) => void;
-  setCurrencyFlagOut: (value: string) => void;
+  setCurrencyFlagIn: (value: AcceptedCurrencies) => void;
+  setCurrencyFlagOut: (value: AcceptedCurrencies) => void;
 };
 
 export const CurrencyContextDefaultValues: CurrencyContextData = {
   currencyValueIn: '',
-  currencyValueInFormatted: '',
   currencyValueOut: '',
 
-  currencyFlagIn: '',
-  currencyFlagOut: '',
+  currencyFlagIn: 'usd',
+  currencyFlagOut: 'eur',
+
+  isLoading: false,
+  hasError: false,
+  quoteRates: {},
+  quotedAt: {},
 
   setCurrencyValueIn: () => null,
   setCurrencyValueOut: () => null,
@@ -48,83 +56,45 @@ export type CurrencyProviderProps = {
   children: ReactNode;
 };
 
-type HandleOnSuccessData = {
-  [key: string]: {
-    ask: number;
-  };
-};
+const readSharedParams = () =>
+  typeof window === 'undefined' ? {} : parseShareSearch(window.location.search);
 
 export const CurrencyProvider = ({ children }: CurrencyProviderProps) => {
-  const [currencyValueIn, setCurrencyValueIn] = useState('1');
-
+  const [currencyValueIn, setCurrencyValueIn] = useState(
+    () => readSharedParams().amount ?? '1'
+  );
   const [currencyValueOut, setCurrencyValueOut] = useState('');
 
-  const [currencyFlagIn, setCurrencyFlagIn] = useState(
-    getUserDefaultCurrency()
+  const [currencyFlagIn, setCurrencyFlagIn] = useState<AcceptedCurrencies>(
+    () => readSharedParams().from ?? getUserDefaultCurrency()
   );
-  const [currencyFlagOut, setCurrencyFlagOut] = useState(
-    navigator.language.substring(0, 2) === 'en' ? 'eur' : 'usd'
-  );
-
-  const currencyMaskedValue = maskCurrency(
-    currencyFlagIn,
-    Number(currencyValueIn)
+  const [currencyFlagOut, setCurrencyFlagOut] = useState<AcceptedCurrencies>(
+    () =>
+      readSharedParams().to ?? (getNavigatorLanguage() === 'en' ? 'eur' : 'usd')
   );
 
-  const [currencyValueInFormatted, setCurrencyValueInFormatted] =
-    useState(currencyMaskedValue);
+  const { quoteRates, quotedAt, isLoading, hasError, convertedValue } =
+    useQuote(currencyFlagIn, currencyFlagOut, currencyValueIn);
 
-  const debouncedValueIn = useDebounce(currencyValueIn, 500);
-  const debouncedFlagIn = useDebounce(currencyFlagIn, 500);
-  const debouncedFlagOut = useDebounce(currencyFlagOut, 500);
-
-  const handleOnSuccess = (data: HandleOnSuccessData) => {
-    const formattedKey = `${currencyFlagIn}${currencyFlagOut}`.toUpperCase();
-    const askValue = data[formattedKey]?.ask;
-
-    const convertedValue = (parseFloat(currencyValueIn) * askValue).toFixed(2);
+  useEffect(() => {
     setCurrencyValueOut(convertedValue);
-  };
-
-  const handleGetCurrencyValue = async () => {
-    const hasValidValue =
-      debouncedValueIn || debouncedFlagIn || debouncedFlagOut;
-    if (hasValidValue) {
-      try {
-        const { data } = await getCurrencyValue({
-          coin: currencyFlagIn.toLowerCase(),
-          coinin: currencyFlagOut.toLowerCase()
-        });
-
-        handleOnSuccess(data);
-      } catch (error) {
-        console.error(`Ops... Something went wrong!`, error);
-      }
-    }
-  };
-
-  const handleFormatValue = () => {
-    setCurrencyValueInFormatted(
-      maskCurrency(currencyFlagIn, Number(currencyValueIn))
-    );
-  };
+  }, [convertedValue]);
 
   useEffect(() => {
-    handleGetCurrencyValue();
-  }, [debouncedValueIn, debouncedFlagIn, debouncedFlagOut]);
-
-  useEffect(() => {
-    handleFormatValue();
-  }, [currencyValueIn, currencyFlagIn]);
+    syncShareUrl(currencyFlagIn, currencyFlagOut, currencyValueIn);
+  }, [currencyFlagIn, currencyFlagOut, currencyValueIn]);
 
   return (
     <CurrencyContext.Provider
       value={{
         currencyValueIn,
-        currencyValueInFormatted,
         currencyValueOut,
         currencyFlagIn,
         currencyFlagOut,
+        isLoading,
+        hasError,
+        quoteRates,
+        quotedAt,
         setCurrencyValueIn,
         setCurrencyValueOut,
         setCurrencyFlagIn,

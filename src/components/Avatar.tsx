@@ -6,12 +6,20 @@ export type AvatarProps = {
 };
 
 const Avatar = ({ fullName, githubUsername }: AvatarProps) => {
-  const photoUrl = `https://github.com/${githubUsername}.png`;
+  const photoUrl = `https://avatars.githubusercontent.com/${githubUsername}`;
   const githubLink = `https://github.com/${githubUsername}`;
 
   return (
-    <Link href={githubLink} isExternal>
-      <ChakraAvatar name={fullName} src={photoUrl} />
+    <Link
+      href={githubLink}
+      target="_blank"
+      rel="noopener noreferrer"
+      aria-label={fullName}
+    >
+      <ChakraAvatar.Root>
+        <ChakraAvatar.Fallback name={fullName} />
+        <ChakraAvatar.Image src={photoUrl} />
+      </ChakraAvatar.Root>
     </Link>
   );
 };

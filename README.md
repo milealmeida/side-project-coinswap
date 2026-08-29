@@ -13,7 +13,6 @@ This project was developed by a group of friends with the aim of learning and te
 - **[Vite](https://vitejs.dev/)**: Used as the bundler/build tool for the application.
 - **[Chakra UI](https://chakra-ui.com/)**: UI library to streamline React-based interface development.
 - **[Axios](https://axios-http.com/)**: Used for HTTP requests to the API.
-- **[Framer Motion](https://www.framer.com/motion/)**: Library for animations in React.
 - **[i18next](https://www.i18next.com/)**: Used for handling internationalization in the application.
 - **[React Icons](https://react-icons.github.io/react-icons/)**: Icon set for React.
 - **[Recharts](https://recharts.org/)**: Library for creating charts in React.
@@ -42,3 +41,4 @@ npm install
 
 # Start the application
 npm run dev
+```

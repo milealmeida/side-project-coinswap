@@ -1,70 +1,70 @@
-import { ChangeEvent, useRef, useEffect, useState } from 'react';
+import { ChangeEvent, FocusEvent, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { TbArrowsExchange } from 'react-icons/tb';
 
-import {
-  Box,
-  Flex,
-  Heading,
-  useColorModeValue,
-  Icon,
-  Button,
-  Text
-} from '@chakra-ui/react';
+import { Box, Button, Flex, Heading, Icon, Text } from '@chakra-ui/react';
 
-import { Chart, Footer, Header, Input } from 'components';
+import { Chart, CurrencyBoard, Footer, Header, Input } from 'components';
+import { useColorModeValue } from 'components/ui/color-mode';
 import { useCurrency } from 'contexts/currency';
-import { AcceptedCurrencies } from 'types/acceptedCurrencies';
+import { maskCurrency, parseAmount } from 'hooks/Masks';
+import { useQuoteHistory, type HistoryRange } from 'hooks/useQuoteHistory';
+import { copyText } from 'utils/clipboard';
+import { CURRENCIES } from 'utils/currencies';
+import { formatQuoteStamp } from 'utils/quoteMeta';
+import { toHtmlLang } from 'utils/userUtils';
 
 import { dark, light } from 'styles/global';
-import { maskCurrency } from 'hooks/Masks';
-import { formatValue } from 'utils/stringUtils';
 
 export default function Home() {
   const colors = useColorModeValue(light, dark);
-  const { t: translate } = useTranslation();
+  const { t: translate, i18n } = useTranslation();
 
   const {
     currencyValueIn,
-    currencyValueInFormatted,
     currencyValueOut,
     currencyFlagIn,
     currencyFlagOut,
+    isLoading,
+    hasError,
+    quoteRates,
+    quotedAt,
     setCurrencyFlagIn,
     setCurrencyFlagOut,
     setCurrencyValueIn,
     setCurrencyValueOut
   } = useCurrency();
 
-  const [isSameFlag, setIsSameFlag] = useState(false);
   const [isFocused, setIsFocused] = useState(false);
+  const [copied, setCopied] = useState(false);
+  const [historyDays, setHistoryDays] = useState<HistoryRange>(7);
+  const copiedTimer = useRef<ReturnType<typeof setTimeout> | undefined>(
+    undefined
+  );
 
-  const inputCurrencyValueInRef = useRef<HTMLInputElement>(null);
+  const isSameFlag = currencyFlagIn === currencyFlagOut;
+
+  const amountIn = parseAmount(currencyFlagIn, currencyValueIn);
+  const amountOut = parseAmount(currencyFlagOut, currencyValueOut);
 
   const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
-    const inputValue = event.currentTarget?.value;
+    const value = event.currentTarget?.value?.replace(/[^0-9,\.]/g, '');
+    let tempValue = value;
 
-    const formattedValue = formatValue(inputValue);
-    let tempValue = formattedValue;
-
-    if (inputValue.length === 0) {
-      tempValue = '0';
-    }
-
-    if (inputValue.length === 2 && inputValue[0] === '0')
+    if (value.length === 2 && value[0] === '0')
       tempValue = tempValue.substring(1);
 
     setCurrencyValueIn(tempValue.substring(0, 11));
   };
 
-  const handleOnFocus = (event: ChangeEvent<HTMLInputElement>) => {
-    const formattedValueIn = event.target.value;
-    setCurrencyValueIn(formattedValueIn);
+  const handleOnFocus = () => {
+    setIsFocused(true);
   };
 
-  const handleOnBlur = (event: ChangeEvent<HTMLInputElement>) => {
+  const handleOnBlur = (event: FocusEvent<HTMLInputElement>) => {
     const value = event.currentTarget?.value;
-    if (value.trim() === '') return setCurrencyValueIn('1');
+    if (value.trim() === '') setCurrencyValueIn('1');
+    setIsFocused(false);
   };
 
   const handleButtonExchangeClick = () => {
@@ -78,26 +78,68 @@ export default function Home() {
     setCurrencyFlagOut(tempCurrencyFlagIn);
   };
 
-  const handleIsFocused = () => {
-    setIsFocused(true);
-    inputCurrencyValueInRef.current?.focus();
-  };
-
   useEffect(() => {
-    if (currencyFlagIn.toLowerCase() === currencyFlagOut.toLowerCase()) {
-      return setIsSameFlag(true);
-    }
+    return () => window.clearTimeout(copiedTimer.current);
+  }, []);
 
-    setIsSameFlag(false);
-  }, [currencyFlagIn, currencyFlagOut]);
+  const currencyValueInFormatted = Number.isFinite(amountIn)
+    ? maskCurrency(currencyFlagIn, amountIn)
+    : '';
 
-  const data = [
-    {
-      name: translate('coin'),
-      [currencyFlagIn.toUpperCase()]: currencyValueIn,
-      [currencyFlagOut.toUpperCase()]: currencyValueOut
+  const currencyValueOutFormatted = Number.isFinite(amountOut)
+    ? maskCurrency(currencyFlagOut, amountOut)
+    : '';
+
+  const fromCode = CURRENCIES[currencyFlagIn].text;
+  const toCode = CURRENCIES[currencyFlagOut].text;
+  const locale = toHtmlLang(i18n.language);
+  const quoteUpdatedAt = quotedAt[currencyFlagOut];
+  const showQuoteUpdated = !isSameFlag && quoteUpdatedAt !== undefined;
+
+  const quoteUpdated = showQuoteUpdated
+    ? translate('quoteStamp', {
+        when: formatQuoteStamp(quoteUpdatedAt, locale),
+        source: translate('quoteSource')
+      })
+    : '';
+
+  const statusDescribedBy = showQuoteUpdated
+    ? 'converter-status quote-rate'
+    : 'converter-status';
+
+  const {
+    points: historyPoints,
+    isLoading: historyLoading,
+    hasError: historyError
+  } = useQuoteHistory(currencyFlagIn, currencyFlagOut, historyDays, locale);
+
+  const statusMessage = isSameFlag
+    ? translate('errorMessage')
+    : hasError
+      ? translate('requestError')
+      : isLoading
+        ? translate('loading')
+        : '';
+
+  const resultSummary = translate('chart.summary', {
+    fromAmount: currencyValueInFormatted || '—',
+    from: fromCode,
+    toAmount: currencyValueOutFormatted || '—',
+    to: toCode
+  });
+
+  const handleCopyResult = async () => {
+    if (!currencyValueOutFormatted) return;
+
+    try {
+      await copyText(resultSummary);
+      setCopied(true);
+      window.clearTimeout(copiedTimer.current);
+      copiedTimer.current = window.setTimeout(() => setCopied(false), 2000);
+    } catch {
+      setCopied(false);
     }
-  ];
+  };
 
   return (
     <Box
@@ -106,121 +148,206 @@ export default function Home() {
       alignItems="center"
       justifyContent="space-between"
       flexDir="column"
-      height="100vh"
+      minH="100vh"
+      css={{ minHeight: '100dvh' }}
+      overflowX="hidden"
     >
+      <a href="#converter" data-sr-only>
+        {translate('skipToConverter')}
+      </a>
       <Header />
-      <Heading
-        color="primary"
-        data-testid="title"
-        paddingInline={{ base: '2rem', md: 0 }}
-      >
-        {translate('title')}
-      </Heading>
+      <Box as="main" display="contents">
+        <Heading
+          as="h1"
+          id="converter"
+          tabIndex={-1}
+          outline="none"
+          color="primary"
+          data-testid="title"
+          fontSize="2.2rem"
+          paddingInline={{ base: '2rem', md: 0 }}
+        >
+          {translate('title')}
+        </Heading>
 
-      <Flex
-        position="relative"
-        alignItems="center"
-        gap={{ base: '1rem', md: '1.6rem' }}
-        marginBlock="2rem"
-        flexDir={{ base: 'column', md: 'row' }}
-        paddingInline={{ base: '2rem', md: 0 }}
-      >
-        <div style={{ position: 'relative' }}>
-          <Input
-            reference={inputCurrencyValueInRef}
-            className="inputCurrencyFlagIn"
-            onChange={handleInputChange}
-            onFocus={handleOnFocus}
-            value={currencyValueIn}
-            onClick={(event) => event.currentTarget.select()}
-            currencyCode={currencyFlagIn.toLowerCase() as AcceptedCurrencies}
-            onChangeCurrency={(codeIn) => {
-              setCurrencyFlagIn(codeIn);
-            }}
-            onBlur={(event) => {
-              handleOnBlur(event);
-              setIsFocused(false);
-            }}
-          />
+        <Flex
+          alignItems="center"
+          gap="2rem"
+          marginBlock="2rem"
+          flexDir="column"
+          w="100%"
+          maxW="60rem"
+          paddingInline={{ base: '2rem', md: 0 }}
+        >
+          <Flex
+            alignItems="center"
+            justifyContent="center"
+            gap={{ base: '1rem', md: '1.6rem' }}
+            flexDir={{ base: 'column', md: 'row' }}
+            w="100%"
+          >
+            <Input
+              inputMode="decimal"
+              onChange={handleInputChange}
+              onFocus={handleOnFocus}
+              value={isFocused ? currencyValueIn : currencyValueInFormatted}
+              onClick={(event) => event.currentTarget.select()}
+              currencyCode={currencyFlagIn}
+              onChangeCurrency={setCurrencyFlagIn}
+              onBlur={handleOnBlur}
+              aria-label={translate('amountFrom', { currency: fromCode })}
+              currencyAriaLabel={translate('selectCurrency', {
+                currency: fromCode
+              })}
+              aria-invalid={isSameFlag}
+              aria-describedby={statusDescribedBy}
+            />
 
-          {!isFocused && (
-            <Flex
-              borderRadius="0.8rem"
-              onClick={handleIsFocused}
-              bg={colors.bgColor}
-              width="50%"
-              height={{ base: '42px', md: '49px' }}
-              position="absolute"
-              top="0.2rem"
-              left="0.2rem"
-              paddingLeft="1.6rem"
-              fontSize="1.6rem"
-              overflowX="scroll"
-              paddingBottom="2rem"
-              paddingTop={{ base: '0.9rem', md: '1.3rem' }}
-              sx={{
-                '&::-webkit-scrollbar': {
-                  height: '0.5rem'
-                },
-                '&::-webkit-scrollbar-track': {
-                  background: 'transparent',
-                  height: '0.5rem'
-                },
-                '&::-webkit-scrollbar-thumb': {
-                  background: 'transparent',
-                  height: '0.5rem'
-                },
-                scrollbarWidth: '0.2rem'
-              }}
+            <Button
+              bg="transparent"
+              aria-label={translate('swapCurrencies')}
+              onClick={handleButtonExchangeClick}
             >
-              {currencyValueInFormatted}
-            </Flex>
+              <Icon
+                width="2.4rem"
+                height="2.4rem"
+                color="iconExchange"
+                aria-hidden="true"
+              >
+                <TbArrowsExchange />
+              </Icon>
+            </Button>
+
+            <Input
+              readOnly
+              currencyCode={currencyFlagOut}
+              value={currencyValueOutFormatted}
+              onChangeCurrency={setCurrencyFlagOut}
+              aria-label={translate('amountTo', { currency: toCode })}
+              currencyAriaLabel={translate('selectCurrency', {
+                currency: toCode
+              })}
+              aria-invalid={isSameFlag}
+              aria-describedby={statusDescribedBy}
+            />
+          </Flex>
+
+          {quoteUpdated && (
+            <Text
+              id="quote-rate"
+              data-testid="quote-rate"
+              color="textSecondary"
+              fontSize="1.4rem"
+              textAlign="center"
+            >
+              {quoteUpdated}
+            </Text>
           )}
-        </div>
 
-        <Button bg="transparent" onClick={handleButtonExchangeClick}>
-          <Icon
-            as={TbArrowsExchange}
-            width="2.4rem"
-            height="2.4rem"
-            color="iconExchange"
-          />
-        </Button>
+          <Button
+            bg="primary"
+            color="bgColor"
+            fontSize="1.4rem"
+            fontWeight="500"
+            p="2rem"
+            borderRadius="0.8rem"
+            onClick={handleCopyResult}
+            disabled={!currencyValueOutFormatted || hasError}
+            aria-label={translate('copyResult')}
+            _hover={{
+              filter: 'brightness(1.1)'
+            }}
+            _disabled={{
+              opacity: 0.5,
+              cursor: 'not-allowed'
+            }}
+          >
+            {copied ? translate('copied') : translate('copyResult')}
+          </Button>
 
-        <Input
-          disabled
-          currencyCode={currencyFlagOut.toLowerCase() as AcceptedCurrencies}
-          value={maskCurrency(currencyFlagOut, Number(currencyValueOut))}
-          onChangeCurrency={(codeOut) => {
-            setCurrencyFlagOut(codeOut);
-          }}
+          <Text
+            id="converter-status"
+            role={isSameFlag || hasError ? 'alert' : 'status'}
+            aria-live="polite"
+            fontSize="lg"
+            color={isSameFlag || hasError ? 'red' : 'textSecondary'}
+            data-sr-only={statusMessage ? undefined : true}
+            data-testid={
+              hasError && !isSameFlag
+                ? 'request-error'
+                : isLoading && !isSameFlag
+                  ? 'loading'
+                  : undefined
+            }
+          >
+            {statusMessage}
+          </Text>
+        </Flex>
+
+        <Flex
+          w="100%"
+          maxW="61rem"
+          alignItems={{ base: 'center', md: 'center' }}
+          justifyContent={{ base: 'center', md: 'space-between' }}
+          flexDir={{ base: 'column', md: 'row' }}
+          gap="1.2rem"
+          paddingInline={{ base: '2rem', md: 0 }}
+        >
+          <Heading
+            as="h2"
+            color="textPrimary"
+            data-testid="subtitle"
+            textAlign={{ base: 'center', md: 'left' }}
+          >
+            {translate('subtitle')}
+          </Heading>
+          <Flex gap="0.8rem">
+            {([7, 30] as const).map((days) => (
+              <Button
+                key={days}
+                bg={historyDays === days ? 'primary' : 'transparent'}
+                color={historyDays === days ? 'bgColor' : 'textPrimary'}
+                fontSize="1.4rem"
+                fontWeight="500"
+                p="0.8rem 1.2rem"
+                borderRadius="0.8rem"
+                onClick={() => setHistoryDays(days)}
+                aria-pressed={historyDays === days}
+              >
+                {translate(days === 7 ? 'chart.days7' : 'chart.days30')}
+              </Button>
+            ))}
+          </Flex>
+        </Flex>
+
+        <Chart
+          data={historyPoints}
+          summary={translate('chart.history', {
+            from: fromCode,
+            to: toCode,
+            days: historyDays
+          })}
+          dateLabel={translate('chart.date')}
+          rateLabel={translate('chart.rate')}
+          message={
+            isSameFlag
+              ? translate('chart.samePair')
+              : historyLoading && historyPoints.length === 0
+                ? translate('chart.loading')
+                : historyError
+                  ? translate('chart.empty')
+                  : historyPoints.length === 0
+                    ? translate('chart.empty')
+                    : undefined
+          }
         />
 
-        {isSameFlag && (
-          <Text
-            position="absolute"
-            top={{ base: '15rem', md: '6rem' }}
-            right={{ base: '2rem', md: '0' }}
-            fontSize="lg"
-            color={colors.red}
-          >
-            {translate('errorMessage')}
-          </Text>
-        )}
-      </Flex>
-
-      <Heading
-        w="100%"
-        maxW="61rem"
-        color="textPrimary"
-        data-testid="subtitle"
-        textAlign={{ base: 'center', md: 'left' }}
-      >
-        {translate('subtitle')}
-      </Heading>
-
-      <Chart data={data} />
-
+        <CurrencyBoard
+          amountValue={currencyValueIn}
+          fromFlag={currencyFlagIn}
+          quoteRates={quoteRates}
+        />
+      </Box>
       <Footer />
     </Box>
   );

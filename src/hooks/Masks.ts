@@ -1,10 +1,11 @@
 import { AcceptedCurrencies } from 'types/acceptedCurrencies';
-import { getCurrencyFormatted } from 'utils/getCurrencyFormatted';
+import { getCurrencyFormatted } from 'utils/currencies';
 
-const maskCurrency = (currencyFlag: string, currencyValue: number) => {
-  const { country, currency } = getCurrencyFormatted(
-    currencyFlag.toLowerCase() as AcceptedCurrencies
-  );
+const maskCurrency = (
+  currencyFlag: AcceptedCurrencies,
+  currencyValue: number
+) => {
+  const { country, currency } = getCurrencyFormatted(currencyFlag);
 
   const currencyFormatted = new Intl.NumberFormat(country, {
     style: 'currency',
@@ -12,6 +13,44 @@ const maskCurrency = (currencyFlag: string, currencyValue: number) => {
   }).format(currencyValue);
 
   return currencyFormatted;
+};
+
+const parseLooseAmount = (value: string): number => {
+  const cleaned = value.replace(/[^\d,.-]/g, '');
+  if (!cleaned) return NaN;
+
+  const lastComma = cleaned.lastIndexOf(',');
+  const lastDot = cleaned.lastIndexOf('.');
+  const normalized =
+    lastComma > lastDot
+      ? cleaned.replace(/\./g, '').replace(',', '.')
+      : cleaned.replace(/,/g, '');
+
+  return parseFloat(normalized);
+};
+
+const parseAmount = (
+  currencyFlag: AcceptedCurrencies,
+  value: string
+): number => {
+  const trimmed = value.trim();
+  if (!trimmed) return NaN;
+
+  if (/^[\d.,-]+$/.test(trimmed)) {
+    return parseLooseAmount(trimmed);
+  }
+
+  const locale = getCurrencyFormatted(currencyFlag);
+
+  if (!locale) return parseLooseAmount(trimmed);
+
+  const parsed = removeCurrencyMask({
+    country: locale.country,
+    currency: locale.currency,
+    money: trimmed
+  });
+
+  return Number.isFinite(parsed) ? parsed : parseLooseAmount(trimmed);
 };
 
 function removeCurrencyMask({
@@ -53,4 +92,4 @@ function removeCurrencyMask({
   return parseFloat(stringNumber);
 }
 
-export { maskCurrency, removeCurrencyMask };
+export { maskCurrency, parseAmount, removeCurrencyMask };

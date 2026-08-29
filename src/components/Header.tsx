@@ -1,41 +1,46 @@
 import {
   Flex,
   Heading,
+  Icon,
   IconButton,
   Image,
   Link,
   Menu,
-  MenuButton,
-  MenuItem,
-  MenuList,
-  useColorMode
+  Portal
 } from '@chakra-ui/react';
-import { FaMoon, FaSun } from 'react-icons/fa';
-import { useTranslation } from 'react-i18next';
 import i18n from 'i18next';
+import { useTranslation } from 'react-i18next';
+import { FaMoon, FaSun } from 'react-icons/fa';
 
-import { AcceptedLanguages } from 'types/acceptedLanguages';
-import { languages } from 'assets/locales/languages';
 import { es, ptBr, usa } from 'assets/img';
+import { languages } from 'assets/locales/languages';
+import { useColorMode } from 'components/ui/color-mode';
+import { AcceptedLanguages } from 'types/acceptedLanguages';
 
 const Header = () => {
   const { colorMode, toggleColorMode } = useColorMode();
   const { t: translate } = useTranslation();
 
   const currentLanguage = i18n.language as AcceptedLanguages;
+  const flagAlt = {
+    ptBr: 'flags.brazil',
+    es: 'flags.spain',
+    en: 'flags.usa'
+  } as const;
 
-  const renderCountryIcon = (iconKey: AcceptedLanguages) => {
+  const renderCountryIcon = (iconKey: AcceptedLanguages, alt: string) => {
     const data = {
-      ptBr: <Image w="3rem" src={ptBr} alt={translate('flags.brazil')} />,
-      es: <Image w="3rem" src={es} alt={translate('flags.spain')} />,
-      en: <Image w="3rem" src={usa} alt={translate('flags.usa')} />
+      ptBr: ptBr,
+      es: es,
+      en: usa
     };
 
-    return data[iconKey];
+    return <Image w="3rem" src={data[iconKey] ?? usa} alt={alt} />;
   };
 
   return (
     <Flex
+      as="header"
       maxW="120rem"
       w="100%"
       marginInline="auto"
@@ -43,8 +48,10 @@ const Header = () => {
       justifyContent="space-between"
       p={{ base: '2rem', md: '4rem' }}
     >
-      <Link href="/">
-        <Heading>CoinSwap</Heading>
+      <Link href="/" aria-label="CoinSwap">
+        <Heading as="p" fontSize="2.4rem" fontWeight="700">
+          CoinSwap
+        </Heading>
       </Link>
 
       <Flex gap="2rem">
@@ -53,28 +60,48 @@ const Header = () => {
           width="3rem"
           height="3rem"
           bg="transparent"
-          aria-label="toggle theme"
+          color="iconExchange"
+          aria-label={
+            colorMode === 'dark'
+              ? translate('theme.light')
+              : translate('theme.dark')
+          }
           rounded="full"
           onClick={toggleColorMode}
-          icon={colorMode === 'dark' ? <FaSun /> : <FaMoon />}
-        />
+        >
+          <Icon aria-hidden="true" color="iconExchange" boxSize="1.6rem">
+            {colorMode === 'dark' ? <FaSun /> : <FaMoon />}
+          </Icon>
+        </IconButton>
 
-        <Menu isLazy>
-          <MenuButton fontSize="1.6rem">
-            {renderCountryIcon(currentLanguage)}
-          </MenuButton>
-          <MenuList minW="initial" width="6rem">
-            {languages.map(({ label, code }) => (
-              <MenuItem
-                key={label}
-                justifyContent="center"
-                onClick={() => i18n.changeLanguage(code)}
-              >
-                {renderCountryIcon(code as AcceptedLanguages)}
-              </MenuItem>
-            ))}
-          </MenuList>
-        </Menu>
+        <Menu.Root lazyMount>
+          <Menu.Trigger
+            fontSize="1.6rem"
+            aria-label={translate('languageMenu')}
+          >
+            {renderCountryIcon(
+              currentLanguage,
+              translate(flagAlt[currentLanguage] ?? flagAlt.en)
+            )}
+          </Menu.Trigger>
+          <Portal>
+            <Menu.Positioner>
+              <Menu.Content minW="initial" width="6rem">
+                {languages.map(({ label, code }) => (
+                  <Menu.Item
+                    key={label}
+                    value={code}
+                    justifyContent="center"
+                    aria-label={label}
+                    onClick={() => i18n.changeLanguage(code)}
+                  >
+                    {renderCountryIcon(code as AcceptedLanguages, '')}
+                  </Menu.Item>
+                ))}
+              </Menu.Content>
+            </Menu.Positioner>
+          </Portal>
+        </Menu.Root>
       </Flex>
     </Flex>
   );

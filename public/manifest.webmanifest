@@ -1,0 +1,17 @@
+{
+  "name": "CoinSwap",
+  "short_name": "CoinSwap",
+  "description": "Convert USD, EUR, GBP, CHF, JPY and BRL with live exchange rates.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#F8FAFC",
+  "theme_color": "#02A724",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}
