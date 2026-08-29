@@ -38,6 +38,7 @@ export default {
     },
     allCurrencies: 'Todas las monedas',
     footer: {
+      version: 'v2',
       created: 'Creado por',
       keyTitle: 'Avatar de'
     }

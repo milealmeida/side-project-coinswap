@@ -38,6 +38,7 @@ export default {
     },
     allCurrencies: 'All currencies',
     footer: {
+      version: 'v2',
       created: 'Created by',
       keyTitle: 'Avatar of'
     }

@@ -3,8 +3,8 @@ import Avatar from './Avatar';
 
 import { useColorModeValue } from 'components/ui/color-mode';
 import { contributors } from 'mocks/contributors';
-import { dark, light } from 'styles/global';
 import { useTranslation } from 'react-i18next';
+import { dark, light } from 'styles/global';
 
 const Footer = () => {
   const colors = useColorModeValue(light, dark);
@@ -23,6 +23,7 @@ const Footer = () => {
         flexWrap="wrap"
       >
         <Text>{translate('footer.created')}</Text>
+
         <AvatarGroup>
           {contributors.map(({ fullName, githubUsername }) => (
             <Avatar
@@ -32,6 +33,9 @@ const Footer = () => {
             />
           ))}
         </AvatarGroup>
+
+        <Text aria-hidden="true">·</Text>
+        <Text>{translate('footer.version')}</Text>
       </Flex>
     </Center>
   );
